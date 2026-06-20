@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="{% block meta_desc %}{% if current_lang == 'ar' %}محلات محمد عيداب للمنتجات البلاستيكية - الشركة الرائدة في تصنيع وتوريد المنتجات البلاستيكية عالية الجودة منذ 2010. شامل للمنازل والشركات والمصانع.{% else %}Mohammed Eidab For Plastic Products - Leading manufacturer and supplier of high-quality plastic products since 2010. Serving homes, businesses, and industries.{% endif %}{% endblock %}">
-  <meta name="keywords" content="plastic products, plastic chairs, plastic tables, plastic buckets, plastic containers, plastic manufacturer, wholesale plastic, منتجات بلاستيكية, كراسي بلاستيكية, طاولات بلاستيكية, جرادل، حاويات">
+  <meta name="description" content="{% block meta_desc %}{% if current_lang == 'ar' %}محلات محمد عيداب للمنتجات البلاستيكية - الشركة الرائدة في تصنيع وتوريد المنتجات البلاستيكية عالية الجودة.{% else %}Mohammed Eidab For Plastic Products - Leading plastic products manufacturer and supplier.{% endif %}{% endblock %}">
+  <meta name="keywords" content="plastic products, plastic chairs, plastic tables, plastic buckets, plastic containers, plastic manufacturer, wholesale plastic, منتجات بلاستيكية, كراسي بلاستيك, كراسي سودانية">
   <meta name="author" content="Mohammed Eidab">
   <meta property="og:title" content="{% block og_title %}{% if current_lang == 'ar' %}محلات محمد عيداب للمنتجات البلاستيكية{% else %}Mohammed Eidab For Plastic Products{% endif %}{% endblock %}">
-  <meta property="og:description" content="{% if current_lang == 'ar' %}المحل والمورد الرائد للمنتجات البلاستيكية عالية الجودة بأسعار معقولة في كل أنحاء السودان والمنطقة.{% else %}Your trusted plastic products partner offering quality solutions at competitive prices across the region.{% endif %}">
+  <meta property="og:description" content="{% if current_lang == 'ar' %}المحل والمورد الرائد للمنتجات البلاستيكية عالية الجودة بأسعار الجملة.{% else %}Leading plastic products manufacturer and wholesale supplier.{% endif %}">
   <meta property="og:type" content="website">
   <title>{% block title %}Mohammed Eidab For Plastic Products{% endblock %}</title>
   
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231e6bff'/><text x='16' y='22' font-size='20' fill='white' text-anchor='middle' font-weight='bold'>E</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231e6bff'/><text x='16' y='22' text-anchor='middle' font-size='18'>🏭</text></svg>">
   
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700&display=swap');
@@ -137,7 +137,7 @@
 
     /* --- زر الهامبرغر المحصن والظاهر 100% على الموبايل --- */
     .eidab-hamburger {
-      display: none !important;
+      display: none !important; /* مخفي في الشاشات الكبيرة */
       background: transparent !important;
       border: none !important;
       flex-direction: column !important;
@@ -151,6 +151,7 @@
       z-index: 100001 !important;
     }
     
+    /* إعطاء أبعاد صريحة جداً للخطوط لضمان عدم اختفائها */
     .eidab-hamburger span {
       display: block !important;
       width: 25px !important;
@@ -161,6 +162,7 @@
       transition: transform 0.3s ease, opacity 0.3s ease !important;
     }
 
+    /* حركة التحول إلى علامة X عند الفتح */
     .eidab-hamburger.open span:nth-child(1) {
       transform: translateY(8px) rotate(45deg) !important;
     }
@@ -233,7 +235,7 @@
         display: none !important;
       }
       .eidab-hamburger {
-        display: flex !important;
+        display: flex !important; /* إظهار زر القائمة بالتأكيد */
       }
     }
 
@@ -242,7 +244,7 @@
         gap: 8px !important;
       }
       .eidab-cart-text {
-        display: none !important;
+        display: none !important; /* إخفاء النص لعدم زحام الشاشة على الموبايل */
       }
       .eidab-nav-cart {
         padding: 8px 10px !important;
@@ -254,11 +256,12 @@
     }
 
     @media (max-width: 480px) {
+      /* تعديل حجم نص السطر الثاني للشعار بدلاً من حذفه ليبقى ظاهراً */
       .eidab-logo-text span:first-child {
         font-size: 0.95rem !important;
       }
       .eidab-logo-text span:last-child {
-        display: block !important;
+        display: block !important; /* نضمن استمرار ظهوره */
         font-size: 0.65rem !important;
         letter-spacing: 0px !important;
       }
@@ -307,7 +310,7 @@
       <a href="{{ url_for('set_lang', lang='en') }}" class="eidab-lang-btn">English</a>
     {% endif %}
 
-    <!-- زر الهامبرغر -->
+    <!-- زر الهامبرغر (الشرطات الثلاثة) -->
     <button class="eidab-hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Menu">
       <span></span>
       <span></span>
@@ -365,15 +368,15 @@
       </div>
       <p class="footer-desc">
         {% if current_lang == 'ar' %}
-          الشركة الرائدة في تصنيع وتوريد المنتجات البلاستيكية عالية الجودة للمنازل، الشركات، تجار التجزئة، والمصانع منذ 2010.
+          الشركة الرائدة في تصنيع وتوريد المنتجات البلاستيكية عالية الجودة للمنازل، الشركات، تجار التجزئة، والمصانع.
         {% else %}
-          A leading manufacturer and supplier of high-quality plastic products for homes, businesses, retailers, and industries since 2010.
+          A leading manufacturer and supplier of high-quality plastic products for homes, businesses, retailers, and industries.
         {% endif %}
       </p>
     </div>
   </div>
   <div class="footer-bottom">
-    <span>{% if current_lang == 'ar' %}محلات محمد عيداب للمنتجات البلاستيكية © 2026 – جميع الحقوق محفوظة{% else %}Mohammed Eidab For Plastic Products. © 2026 – All rights reserved.{% endif %}</span>
+    <span> {% if current_lang == 'ar' %}محلات محمد عيداب للمنتجات البلاستيكية  {% else %}Mohammed Eidab For Plastic Products.©2026{% endif %} {{ t['footer_rights'] }}</span>
   </div>
 </footer>
 
