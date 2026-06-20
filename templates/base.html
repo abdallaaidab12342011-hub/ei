@@ -13,7 +13,10 @@
   
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231e6bff'/><text x='16' y='22' text-anchor='middle' font-size='18'>🏭</text></svg>">
-  
+  <!-- Add this inside your .nav-links div -->
+{% if current_user.is_authenticated and current_user.is_admin %}
+    <a href="{{ url_for('admin_dashboard') }}" class="admin-link">Admin Dashboard</a>
+{% endif %}
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700&display=swap');
     
@@ -373,6 +376,7 @@
           A leading manufacturer and supplier of high-quality plastic products for homes, businesses, retailers, and industries.
         {% endif %}
       </p>
+      
     </div>
   </div>
   <div class="footer-bottom">
