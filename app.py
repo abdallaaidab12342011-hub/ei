@@ -307,7 +307,12 @@ def products():
         sort=sort,
     )
 
-
+@app.route('/admin')
+@login_required
+def admin_dashboard():
+    if not current_user.is_admin:
+        abort(403) # Prevents non-admins from even seeing the page
+    return render_template('admin_index.html')
 @app.route('/product/<int:product_id>')
 def product_detail(product_id):
     product = db.session.get(Product, product_id)
