@@ -1,0 +1,246 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if current_lang == 'ar' %}تم تأكيد الطلب – مصنع محمد عيداب للمنتجات البلاستيكية{% else %}Order Confirmed – Mohammed Eidab For Plastic Products{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+  /* --- Layout & Core Structures --- */
+  .confirmation-section {
+    padding-top: 100px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* --- Internal Information Blocks --- */
+  .info-block-card {
+    background: var(--off-white);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .info-block-card:last-of-type {
+    margin-bottom: 28px;
+  }
+  
+  .info-block-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 16px;
+  }
+
+  /* --- Order Items Layout --- */
+  .conf-item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .conf-item-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--navy);
+  }
+  .conf-item-meta {
+    font-size: 0.78rem;
+    color: var(--text-light);
+  }
+  .conf-item-subtotal {
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  /* --- Total Summary Row --- */
+  .conf-total-row {
+    border-top: 1px solid var(--gray-light);
+    margin-top: 16px;
+    padding-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--navy);
+  }
+  .conf-total-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+  }
+
+  /* --- Customer Delivery Subgrid --- */
+  .delivery-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    font-size: 0.88rem;
+  }
+  .delivery-full-width {
+    grid-column: 1 / -1;
+  }
+  .delivery-label {
+    color: var(--text-light);
+  }
+
+  /* --- Footer & Status Actions --- */
+  .status-badge-container {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .status-badge-element {
+    font-size: 0.85rem;
+    padding: 8px 20px;
+  }
+  .confirmation-footer-box {
+    text-align: center;
+  }
+  .confirmation-footer-notice {
+    color: var(--text-light);
+    font-size: 0.88rem;
+    margin-bottom: 20px;
+  }
+  .confirmation-btn-cluster {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ==========================================================================
+     MOBILE RESPONSIVENESS
+     ========================================================================== */
+  @media (max-width: 576px) {
+    .confirmation-section {
+      padding-top: 80px;
+    }
+    .delivery-details-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .info-block-card {
+      padding: 16px;
+    }
+  }
+</style>
+
+<!-- Translation Mapping Dictionaries -->
+{% set cat_translations = {
+  'Plastic Chairs': 'كراسي بلاستيكية',
+  'Plastic Tables': 'طاولات بلاستيكية',
+  'Plastic Buckets': 'جراكن وجرادل',
+  'Plastic Containers': 'حافظات وبوكسات',
+  'Storage Products': 'صناديق تخزين',
+  'Household Products': 'أدوات منزلية',
+  'Industrial Products': 'منتجات صناعية'
+} %}
+{% set cat_emojis = {'Plastic Chairs': '🪑', 'Plastic Tables': '🪵', 'Plastic Buckets': '🪣', 'Plastic Containers': '📦', 'Storage Products': '🗄️', 'Household Products': '🏠', 'Industrial Products': '🏭'} %}
+
+<section class="section section-gray confirmation-section">
+  <div class="success-card animate-up">
+    <div class="success-header">
+      <div class="success-icon">🎉</div>
+      <h2>
+        {% if current_lang == 'ar' %}تمت عملية الشراء بنجاح!{% else %}Order Confirmed!{% endif %}
+      </h2>
+      <p>
+        {% if current_lang == 'ar' %}شكراً لطلبك وثقتك بنا. سنتواصل معك قريباً عبر الهاتف لتأكيد تفاصيل وموعد التوصيل.{% else %}Thank you for your order. We'll contact you shortly to confirm delivery.{% endif %}
+      </p>
+    </div>
+    
+    <div class="success-body">
+      <div class="order-num">
+        <label>{% if current_lang == 'ar' %}رقم الطلب الخاص بك{% else %}Your Order Number{% endif %}</label>
+        <h3>{{ order.order_number }}</h3>
+      </div>
+
+      <!-- ORDER DETAILS -->
+      <div class="info-block-card">
+        <div class="info-block-title">
+          {% if current_lang == 'ar' %}تفاصيل المنتجات{% else %}Order Details{% endif %}
+        </div>
+        
+        {% for item in order.items %}
+        <div class="conf-item-row">
+          <div style="font-size: 1.5rem;">{{ cat_emojis.get(item.product.category, '📦') }}</div>
+          <div style="flex: 1;">
+            <div class="conf-item-name">
+              {{ item.product.name_ar if (current_lang == 'ar' and item.product.name_ar) else item.product.name }}
+            </div>
+            <div class="conf-item-meta">
+              {% if current_lang == 'ar' %}
+                الكمية: {{ item.quantity }} × {{ "%.2f"|format(item.unit_price) }} جنيه سوداني
+              {% else %}
+                Qty: {{ item.quantity }} × {{ "%.2f"|format(item.unit_price) }} SDG
+              {% endif %}
+            </div>
+          </div>
+          <div class="conf-item-subtotal">
+            {{ "%.2f"|format(item.subtotal) }} 
+            <span>{% if current_lang == 'ar' %}جنيه{% else %}SDG{% endif %}</span>
+          </div>
+        </div>
+        {% endfor %}
+        
+        <div class="conf-total-row">
+          <span>{% if current_lang == 'ar' %}الإجمالي الكلي{% else %}Total Amount{% endif %}</span>
+          <span class="conf-total-price">
+            {{ "%.2f"|format(order.total_amount) }} 
+            <span>{% if current_lang == 'ar' %}جنيه سوداني{% else %}SDG{% endif %}</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- CUSTOMER INFO -->
+      <div class="info-block-card">
+        <div class="info-block-title">
+          {% if current_lang == 'ar' %}وجهة التوصيل{% else %}Delivery To{% endif %}
+        </div>
+        <div class="delivery-details-grid">
+          <div><span class="delivery-label">{% if current_lang == 'ar' %}الاسم:{% else %}Name:{% endif %}</span> <strong>{{ order.customer.name }}</strong></div>
+          <div><span class="delivery-label">{% if current_lang == 'ar' %}رقم الهاتف:{% else %}Phone:{% endif %}</span> <strong dir="ltr">{{ order.customer.phone }}</strong></div>
+          {% if order.customer.city %}
+          <div><span class="delivery-label">{% if current_lang == 'ar' %}المدينة:{% else %}City:{% endif %}</span> <strong>{{ order.customer.city }}</strong></div>
+          {% endif %}
+          <div class="delivery-full-width"><span class="delivery-label">{% if current_lang == 'ar' %}العنوان بالكامل:{% else %}Address:{% endif %}</span> {{ order.customer.address }}</div>
+        </div>
+      </div>
+
+      <!-- STATUS -->
+      <div class="status-badge-container">
+        <span class="badge badge-pending status-badge-element">
+          {% if current_lang == 'ar' %}
+            📋 حالة الطلب: 
+            {% if order.status == 'Pending' %}قيد المراجعة{% else %}{{ order.status }}{% endif %}
+          {% else %}
+            📋 Status: {{ order.status }}
+          {% endif %}
+        </span>
+      </div>
+
+      <!-- FOOTER ACTIONS -->
+      <div class="confirmation-footer-box">
+        <p class="confirmation-footer-notice">
+          {% if current_lang == 'ar' %}
+            سنتصل بك هاتفياً على الرقم <strong dir="ltr">{{ order.customer.phone }}</strong> لتأكيد الطلب وترتيب الشحن اللوجستي.
+          {% else %}
+            We'll call you at <strong>{{ order.customer.phone }}</strong> to confirm and arrange delivery.
+          {% endif %}
+        </p>
+        <div class="confirmation-btn-cluster">
+          <a href="{{ url_for('products') }}" class="btn btn-primary">
+            {% if current_lang == 'ar' %}متابعة التسوق{% else %}Continue Shopping{% endif %}
+          </a>
+          <a href="{{ url_for('index') }}" class="btn btn-dark">
+            {% if current_lang == 'ar' %}العودة للرئيسية ←{% else %}← Back to Home{% endif %}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

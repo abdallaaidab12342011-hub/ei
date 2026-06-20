@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if current_lang == 'ar' %}الدفع وإتمام الطلب – محلات محمد عيداب للمنتجات البلاستيكية{% else %}Checkout – Mohammed Eidab For Plastic Products{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+  /* --- Layout & Structure --- */
+  .checkout-hero {
+    padding: 100px 5% 50px;
+  }
+  
+  .checkout-container {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* --- Checkout Main Form Box --- */
+  .checkout-main-box {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--gray-light);
+    overflow: hidden;
+  }
+  
+  .checkout-header {
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--gray-light);
+  }
+  .checkout-header h2 {
+    font-size: 1.2rem;
+    color: var(--navy);
+    margin: 0;
+  }
+  .checkout-header p {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    margin: 4px 0 0;
+  }
+  
+  .checkout-body {
+    padding: 32px;
+  }
+  
+  .payment-alert {
+    margin: 24px 0 0;
+  }
+
+  /* --- Order Summary Sidebar --- */
+  .checkout-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .summary-thumb-box {
+    width: 44px;
+    height: 44px;
+    background: var(--glass);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+  .summary-item-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .summary-item-name {
+    font-size: 0.85rem;
+    color: white;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .summary-item-qty {
+    font-size: 0.75rem;
+    color: var(--gray);
+  }
+  .summary-item-subtotal {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+  }
+  .summary-shipping-free {
+    color: rgba(34, 197, 94, 0.9);
+  }
+  .summary-total-font {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+  }
+
+  /* --- Trust/Support Badges Card --- */
+  .trust-card {
+    margin-top: 16px;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid var(--gray-light);
+    padding: 24px;
+  }
+  .trust-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .trust-row:last-child {
+    margin-bottom: 0;
+  }
+  .trust-icon {
+    font-size: 1.3rem;
+  }
+  .trust-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .trust-desc {
+    font-size: 0.75rem;
+    color: var(--text-light);
+  }
+
+  /* ==========================================================================
+     MOBILE RESPONSIVENESS
+     ========================================================================== */
+  @media (max-width: 992px) {
+    .checkout-container {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .checkout-header {
+      padding: 20px 24px;
+    }
+    .checkout-body {
+      padding: 24px;
+    }
+  }
+</style>
+
+<!-- Translation Mapping Dictionaries -->
+{% set cat_translations = {
+  'Plastic Chairs': 'كراسي بلاستيكية',
+  'Plastic Tables': 'طاولات بلاستيكية',
+  'Plastic Buckets': 'جراكن وجرادل',
+  'Plastic Containers': 'حافظات وبوكسات',
+  'Storage Products': 'صناديق تخزين',
+  'Household Products': 'أدوات منزلية',
+  'Industrial Products': 'منتجات صناعية'
+} %}
+{% set cat_emojis = {'Plastic Chairs': '🪑', 'Plastic Tables': '🪵', 'Plastic Buckets': '🪣', 'Plastic Containers': '📦', 'Storage Products': '🗄️', 'Household Products': '🏠', 'Industrial Products': '🏭'} %}
+
+<!-- HERO -->
+<div class="page-hero checkout-hero">
+  <h1>
+    {% if current_lang == 'ar' %}إتمام الشراء{% else %}Checkout{% endif %}
+  </h1>
+  <p>
+    {% if current_lang == 'ar' %}يرجى إدخال بياناتك لإكمال وطلب المنتجات{% else %}Fill in your details to complete your order{% endif %}
+  </p>
+</div>
+
+<!-- CHECKOUT CONTENT -->
+<section class="section section-gray" style="padding-top: 48px;">
+  <div class="checkout-container">
+
+    <!-- FORM -->
+    <div>
+      <div class="checkout-main-box">
+        <div class="checkout-header">
+          <h2>{% if current_lang == 'ar' %}بيانات العميل الشحن والتوصيل{% else %}Customer Information{% endif %}</h2>
+          <p>{% if current_lang == 'ar' %}يرجى ملء الحقول التالية. الحقول المصحوبة بعلامة (*) مطلوبة الأساسية.{% else %}Please fill in your details. Fields marked * are required.{% endif %}</p>
+        </div>
+        
+        <div class="checkout-body">
+          <form method="post" action="{{ url_for('checkout') }}" class="checkout-form">
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">{% if current_lang == 'ar' %}الاسم بالكامل *{% else %}Full Name *{% endif %}</label>
+                <input type="text" name="name" class="form-control" placeholder="{% if current_lang == 'ar' %}محمد علي{% else %}Mohammed Ali{% endif %}" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">{% if current_lang == 'ar' %}رقم الهاتف المحمول *{% else %}Phone Number *{% endif %}</label>
+                <input type="tel" name="phone" class="form-control" placeholder="+249 11 576 6604" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">{% if current_lang == 'ar' %}البريد الإلكتروني (اختياري){% else %}Email Address{% endif %}</label>
+              <input type="email" name="email" class="form-control" placeholder="your@email.com">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">{% if current_lang == 'ar' %}عنوان التوصيل بالكامل *{% else %}Delivery Address *{% endif %}</label>
+              <textarea name="address" class="form-control" rows="3" placeholder="{% if current_lang == 'ar' %}اسم الشارع، رقم المبنى، الحي، المعالم البارزة...{% else %}Street name, Building number, District...{% endif %}" required style="resize: vertical;"></textarea>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="form-label">{% if current_lang == 'ar' %}المدينة{% else %}City{% endif %}</label>
+                <input type="text" name="city" class="form-control" placeholder="{% if current_lang == 'ar' %}أم درمان{% else %}Omdurman{% endif %}">
+              </div>
+              <div class="form-group">
+                <label class="form-label">{% if current_lang == 'ar' %}ملاحظات إضافية (اختياري){% else %}Notes (Optional){% endif %}</label>
+                <input type="text" name="notes" class="form-control" placeholder="{% if current_lang == 'ar' %}أي تعليمات خاصة أو تفاصيل إضافية لتسهيل التوصيل…{% else %}Any special instructions for delivery…{% endif %}">
+              </div>
+            </div>
+
+            <!-- PAYMENT NOTE -->
+            <div class="alert alert-info payment-alert">
+              {% if current_lang == 'ar' %}
+                💡 <strong>الدفع عند الاستلام</strong> — ستقوم بالدفع نقداً فور وصول المنتجات إليك بسلام. لا حاجة لأي دفع إلكتروني مسبق.
+              {% else %}
+                💡 <strong>Payment on Delivery</strong> — Pay cash when your order arrives. No online payment required.
+              {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 24px; padding: 16px; font-size: 0.95rem;">
+              {% if current_lang == 'ar' %}
+                ✅ تأكيد وإرسال الطلب – {{ "%.2f"|format(total) }} جنيه سوداني
+              {% else %}
+                ✅ Place Order – {{ "%.2f"|format(total) }} SDG
+              {% endif %}
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER SUMMARY SIDEBAR -->
+    <div>
+      <div class="cart-summary">
+        <div class="cart-summary-title">
+          {% if current_lang == 'ar' %}ملخص طلبك{% else %}Your Order{% endif %}
+        </div>
+
+        {% for item in cart_items %}
+        <div class="checkout-summary-item">
+          <div class="summary-thumb-box">
+            {{ cat_emojis.get(item.product.category, '📦') }}
+          </div>
+          <div class="summary-item-info">
+            <div class="summary-item-name">
+              {{ item.product.name_ar if (current_lang == 'ar' and item.product.name_ar) else item.product.name }}
+            </div>
+            <div class="summary-item-qty">
+              {% if current_lang == 'ar' %}الكمية: {{ item.quantity }}{% else %}Qty: {{ item.quantity }}{% endif %}
+            </div>
+          </div>
+          <div class="summary-item-subtotal">
+            {{ "%.2f"|format(item.subtotal) }}
+          </div>
+        </div>
+        {% endfor %}
+
+        <div class="summary-row">
+          <span>{% if current_lang == 'ar' %}المجموع الفرعي{% else %}Subtotal{% endif %}</span>
+          <span>{{ "%.2f"|format(total) }} {% if current_lang == 'ar' %}جنيه{% else %}SDG{% endif %}</span>
+        </div>
+        <div class="summary-row">
+          <span>{% if current_lang == 'ar' %}تكلفة الشحن{% else %}Shipping{% endif %}</span>
+          <span class="summary-shipping-free">{% if current_lang == 'ar' %}مجاني{% else %}Free{% endif %}</span>
+        </div>
+        <div class="summary-row total">
+          <span>{% if current_lang == 'ar' %}الإجمالي الكلي{% else %}Total{% endif %}</span>
+          <span class="summary-total-val summary-total-font">
+            {{ "%.2f"|format(total) }} <span>{% if current_lang == 'ar' %}جنيه{% else %}SDG{% endif %}</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- TRUST CARD -->
+      <div class="trust-card">
+        <div class="trust-row">
+          <div class="trust-icon">🔒</div>
+          <div>
+            <div class="trust-title">
+              {% if current_lang == 'ar' %}آمن ومحمي بالكامل{% else %}Secure & Safe{% endif %}
+            </div>
+            <div class="trust-desc">
+              {% if current_lang == 'ar' %}بياناتك الشخصية ومشترياتك مشفرة ومحمية{% else %}Your information is protected{% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="trust-row">
+          <div class="trust-icon">🚚</div>
+          <div>
+            <div class="trust-title">
+              {% if current_lang == 'ar' %}توصيل لوجستي مجاني{% else %}Free Delivery{% endif %}
+            </div>
+            <div class="trust-desc">
+              {% if current_lang == 'ar' %}على كافة الطلبات الإقليمية داخل المنطقة{% else %}On all regional orders{% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="trust-row">
+          <div class="trust-icon">📞</div>
+          <div>
+            <div class="trust-title">
+              {% if current_lang == 'ar' %}هل تحتاج إلى مساعدة؟{% else %}Need Help?{% endif %}
+            </div>
+            <div class="trust-desc">
+              +249 115766604
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,457 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if current_lang == 'ar' %}محلات محمد عيداب للمنتجات البلاستيكية – المصنع والمورد الرائد{% else %}Mohammed Eidab For Plastic Products – Leading Manufacturer & Supplier{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+  /* --- Global Section Helpers & Utility Overrides --- */
+  .no-top-padding {
+    padding-top: 0;
+  }
+  .eyebrow-blue {
+    color: rgba(77, 139, 255, 0.9);
+  }
+  .text-center {
+    text-align: center;
+  }
+  .mt-48 {
+    margin-top: 48px;
+  }
+
+  /* --- Stats Section --- */
+  .stats-section-padding {
+    padding: 60px 5%;
+  }
+
+  /* --- Category Presentation --- */
+  .category-link-wrapper {
+    text-decoration: none;
+  }
+
+  /* --- About Section Split Grid --- */
+  .about-split-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .about-body-text {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.95rem;
+    line-height: 1.9;
+    margin-bottom: 28px;
+  }
+  .about-body-text:last-of-type {
+    margin-bottom: 36px;
+  }
+  
+  /* --- Factory Metrics Subgrid --- */
+  .metrics-quad-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .metric-tile {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+  }
+  .metric-tile-highlight {
+    background: rgba(30, 107, 255, 0.15);
+    border: 1px solid rgba(30, 107, 255, 0.3);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+  }
+  .metric-tile-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+  }
+  .metric-tile-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: white;
+    font-weight: 700;
+  }
+  .metric-tile-label {
+    font-size: 0.75rem;
+    color: var(--gray);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+  .metric-tile-highlight .metric-tile-label {
+    color: rgba(77, 139, 255, 0.8);
+  }
+
+  /* --- CTA Closing Block --- */
+  .cta-section-wrapper {
+    text-align: center;
+    background: linear-gradient(135deg, var(--off-white), white);
+  }
+  .cta-constrained-box {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .cta-button-cluster {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .cta-btn-secondary-override {
+    color: var(--navy);
+    border-color: var(--navy-light);
+  }
+
+  /* ==========================================================================
+     MOBILE RESPONSIVENESS
+     ========================================================================== */
+  @media (max-width: 992px) {
+    .about-split-layout {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .metrics-quad-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .metric-tile, .metric-tile-highlight {
+      padding: 24px;
+    }
+  }
+</style>
+
+<!-- Translation Helper Mapping Dictionary -->
+{% set cat_translations = {
+  'Plastic Chairs': 'كراسي بلاستيكية',
+  'Plastic Tables': 'طاولات بلاستيكية',
+  'Plastic Buckets': 'جراكن وجرادل',
+  'Plastic Containers': 'حافظات وبوكسات',
+  'Storage Products': 'صناديق تخزين',
+  'Household Products': 'أدوات منزلية',
+  'Industrial Products': 'منتجات صناعية'
+} %}
+{% set cat_emojis = {'Plastic Chairs': '🪑', 'Plastic Tables': '🪵', 'Plastic Buckets': '🪣', 'Plastic Containers': '📦', 'Storage Products': '🗄️', 'Household Products': '🏠', 'Industrial Products': '🏭'} %}
+
+<!-- HERO INTRODUCTORY BANNER -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-orbs">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      {% if current_lang == 'ar' %}🏭 نلنا ثقتكم منذ 2010 &nbsp;|&nbsp; حاصلون على شهادة الأيزو{% else %}🏭 Trusted Since 2010 &nbsp;|&nbsp; ISO Certified{% endif %}
+    </div>
+    <h1 class="hero-title">
+      {% if current_lang == 'ar' %}رواد صناعة وتوريد<br><span>المنتجات البلاستيكية</span>{% else %}Leading Plastic Products<br><span>Manufacturer & Supplier</span>{% endif %}
+    </h1>
+    <p class="hero-subtitle">
+      {% if current_lang == 'ar' %}منتجات بلاستيكية عالية الجودة للمنازل، الشركات، تجار التجزئة والمصانع. من المستلزمات المنزلية الأساسية إلى الحلول الصناعية المتكاملة.{% else %}High Quality Plastic Products For Homes, Businesses, Retailers And Industries. From household essentials to heavy industrial solutions.{% endif %}
+    </p>
+    <div class="hero-actions">
+      <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">
+        {% if current_lang == 'ar' %}عرض المنتجات ←{% else %}View Products →{% endif %}
+      </a>
+      <a href="{{ url_for('contact') }}" class="btn btn-outline btn-lg">
+        {% if current_lang == 'ar' %}اتصل بنا{% else %}Contact Us{% endif %}
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num"><span>500</span>+</div>
+      <div class="hero-stat-label">{% if current_lang == 'ar' %}منتج فرعي{% else %}Products{% endif %}</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num"><span>10K</span>+</div>
+      <div class="hero-stat-label">{% if current_lang == 'ar' %}عميل سعيد{% else %}Clients{% endif %}</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num"><span>10</span></div>
+      <div class="hero-stat-label">{% if current_lang == 'ar' %}سنوات خبرة{% else %}Years Exp.{% endif %}</div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE NUMERICAL STATS BAR -->
+<section class="section section-dark stats-section-padding">
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-number"><span class="counter accent" data-target="{{ stats.products }}">0</span><span class="accent">+</span></div>
+      <div class="stat-label">{% if current_lang == 'ar' %}منتج نشط{% else %}Active Products{% endif %}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number"><span class="counter" data-target="10000">0</span><span class="accent">+</span></div>
+      <div class="stat-label">{% if current_lang == 'ar' %}عميل سعيد{% else %}Happy Customers{% endif %}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number"><span class="counter" data-target="10">0</span></div>
+      <div class="stat-label">{% if current_lang == 'ar' %}سنوات العطاء في السوق{% else %}Years in Business{% endif %}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number"><span class="counter" data-target="{{ stats.categories }}">0</span></div>
+      <div class="stat-label">{% if current_lang == 'ar' %}أقسام المنتجات الأساسية{% else %}Product Categories{% endif %}</div>
+    </div>
+  </div>
+</section>
+
+<!-- BROWSE PRODUCT CATEGORIES -->
+<section class="section section-dark no-top-padding">
+  <div class="section-header">
+    <span class="section-eyebrow eyebrow-blue">{% if current_lang == 'ar' %}ما نقدمه لعملائنا{% else %}What We Offer{% endif %}</span>
+    <h2 class="section-title light">{% if current_lang == 'ar' %}أقسام المنتجات الرئيسيّة{% else %}Product Categories{% endif %}</h2>
+    <p class="section-subtitle light">{% if current_lang == 'ar' %}من المنتجات المنزلية الأساسية إلى المستلزمات البلاستيكية الصناعية - نوفرها لك بالكامل.{% else %}From household basics to industrial-grade solutions — we have it all.{% endif %}</p>
+  </div>
+  <div class="categories-grid">
+    {% for cat, count in categories %}
+    <a href="{{ url_for('products', category=cat) }}" class="category-card category-link-wrapper">
+      <div class="category-icon">{{ cat_emojis.get(cat, '📦') }}</div>
+      <div class="category-name">
+        {{ cat_translations.get(cat, cat) if current_lang == 'ar' else cat }}
+      </div>
+      <div class="category-count">
+        {{ count }} {% if current_lang == 'ar' %}منتج{% else %}products{% endif %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- FEATURED PRODUCTS GRID -->
+<section class="section section-gray">
+  <div class="section-header">
+    <span class="section-eyebrow">
+      {% if current_lang == 'ar' %}أفضل الاختيارات تداولاً{% else %}Top Picks{% endif %}
+    </span>
+    <h2>
+      {% if current_lang == 'ar' %}المنتجات المميّزة الأكثر طلباً{% else %}Featured Products{% endif %}
+    </h2>
+    <p class="section-subtitle">
+      {% if current_lang == 'ar' %}منتجاتنا الأكثر شعبية والأعلى مبيعاً الموثوقة من قبل آلاف العملاء والشركات.{% else %}Our most popular, best-selling products trusted by thousands of customers.{% endif %}
+    </p>
+  </div>
+
+  <div class="products-grid">
+    {% for product in featured %}
+    <div class="product-card" onclick="window.location='{{ url_for('product_detail', product_id=product.id) }}'">
+      <div class="product-card-img">
+        <div class="product-emoji">{{ cat_emojis.get(product.category, '📦') }}</div>
+        {% if product.is_featured %}
+        <div class="product-card-badge">
+          {% if current_lang == 'ar' %}مميز{% else %}Featured{% endif %}
+        </div>
+        {% endif %}
+      </div>
+      <div class="product-card-body">
+        <div class="product-card-category">
+          {{ cat_translations.get(product.category, product.category) if current_lang == 'ar' else product.category }}
+        </div>
+        <div class="product-card-name">
+          {{ product.name_ar if (current_lang == 'ar' and product.name_ar) else product.name }}
+        </div>
+        <div class="product-card-desc">
+          {{ product.description_ar if (current_lang == 'ar' and product.description_ar) else product.description }}
+        </div>
+        <div class="product-card-footer">
+          <div class="product-price">
+            {{ "%.2f"|format(product.price) }} 
+            <span>{% if current_lang == 'ar' %}جنيه سوداني{% else %}SDG{% endif %}</span>
+          </div>
+          <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">
+            {% if current_lang == 'ar' %}عرض التفاصيل ←{% else %}View →{% endif %}
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="text-center mt-48">
+    <a href="{{ url_for('products') }}" class="btn btn-dark btn-lg">
+      {% if current_lang == 'ar' %}تصفح جميع المنتجات المتاحة ←{% else %}Browse All Products →{% endif %}
+    </a>
+  </div>
+</section>
+
+<!-- QUALITY VALUES & ADVANTAGES -->
+<section class="section section-light">
+  <div class="section-header">
+    <span class="section-eyebrow">{% if current_lang == 'ar' %}مزايا الإنتاج المباشر{% else %}Our Advantages{% endif %}</span>
+    <h2 class="section-title">{% if current_lang == 'ar' %}لماذا تختار  محمد عيداب؟{% else %}Why Choose Mohammed Eidab?{% endif %}</h2>
+    <p class="section-subtitle">{% if current_lang == 'ar' %}أكثر من 10 سنوات من التميز والريادة في تصنيع وتوريد المنتجات البلاستيكية عالية المتانة.{% else %}Over 10 years of excellence in plastic product manufacturing and supply.{% endif %}</p>
+  </div>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🏆</div>
+      <h3 class="feature-title">{% if current_lang == 'ar' %}خامات فائقة الجودة{% else %}Premium Quality{% endif %}</h3>
+      <p class="feature-text">{% if current_lang == 'ar' %}تصنع كافة منتجاتنا من مواد بلاستيكية بكر عالية الجودة، آمنة لحفظ الأغذية، ومقاومة لأشعة الشمس وتغيرات الطقس.{% else %}All products manufactured with high-grade, food-safe, UV-resistant plastic materials that meet international quality standards.{% endif %}</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏭</div>
+      <h3 class="feature-title">{% if current_lang == 'ar' %}من خطوط مصنعنا إليك{% else %}Direct from Factory{% endif %}</h3>
+      <p class="feature-text">{% if current_lang == 'ar' %}نصنع كل شيء في منشأتنا الخاصة دون وسطاء، مما يضمن حصولك على أسعار المصنع التنافسية لطلبيات الجملة الكبيرة.{% else %}We manufacture everything in-house, cutting out middlemen. You get factory-direct pricing with unbeatable value for wholesale orders.{% endif %}</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <h3 class="feature-title">{% if current_lang == 'ar' %}خيارات إنتاجية واسعة{% else %}Wide Product Range{% endif %}</h3>
+      <p class="feature-text">{% if current_lang == 'ar' %}أكثر من 500 صنف فرعي موزعة على 7 أقسام تلبي الاحتياجات المنزلية والتجارية الثقيلة تحت سقف تصنيعي واحد.{% else %}500+ product variants across 7 categories — from household items to heavy industrial solutions, all under one roof.{% endif %}</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🚚</div>
+      <h3 class="feature-title">{% if current_lang == 'ar' %}شحن وتوريد موثوق{% else %}Reliable Delivery{% endif %}</h3>
+      <p class="feature-text">{% if current_lang == 'ar' %}تمتلك المنشأة شبكة إمداد لوجستية سريعة تضمن شحن وتوصيل الطلبيات بدقة سواء كانت لقطعة واحدة أو حاوية كاملة.{% else %}Efficient logistics network ensures timely delivery whether you're ordering a single item or a full container load.{% endif %}</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💰</div>
+      <h3 class="feature-title">{% if current_lang == 'ar' %}خططة أسعار تنافسية{% else %}Competitive Pricing{% endif %}</h3>
+      <p class="feature-text">{% if current_lang == 'ar' %}أفضل قيمة سعرية لبيع التجزئة والجملة في الأسواق المحلية مع توفير خصومات إضافية مجزية للمؤسسات والمصانع.{% else %}Best-in-market wholesale and retail pricing. Volume discounts available for bulk and institutional orders.{% endif %}</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤝</div>
+      <h3 class="feature-title">{% if current_lang == 'ar' %}شراكة وثيقة وثقة مستدامة{% else %}Trusted by Thousands{% endif %}</h3>
+      <p class="feature-text">{% if current_lang == 'ar' %}أكثر من 10,000 عميل وشريك تجاري يشمل كبرى الفنادق، السوبرماركت، المستشفيات، والمنازل بشتى أنحاء الولاية والبلاد.{% else %}Over 10,000 satisfied clients including supermarkets, hotels, factories, and individual households across the region.{% endif %}</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROFILE AND METRICS SNIPPET -->
+<section class="section section-dark">
+  <div class="about-split-layout">
+    <div>
+      <span class="section-eyebrow eyebrow-blue">{% if current_lang == 'ar' %}نبذة تعريفيّة عن المصنع{% else %}About the Company{% endif %}</span>
+      <h2 class="section-title light" style="margin-bottom:20px;">{% if current_lang == 'ar' %}تأسسنا على ركائز الجودة المتينة{% else %}Built on a Foundation of Quality{% endif %}</h2>
+      <p class="about-body-text">
+        {% if current_lang == 'ar' %}
+        تأسس مصنع محمد عيداب للمنتجات البلاستيكية برؤية واضحة ومحددة: تقديم حلول بلاستيكية متينة، بأسعار مدروسة وعادلة، وجودة تصنيع تواكب المتطلبات الحديثة. عبر خطوط إنتاجنا الخاصة نتحكم في كافة معايير الفحص والفرز - بدءاً من فحص الحبيبات الخام إلى تسليم المنتج النهائي للمستهلك.
+        {% else %}
+        Mohammed Eidab For Plastic Products was established with a single vision: to deliver durable, affordable, and high-quality plastic solutions to the market. With our own manufacturing facility, we control every step of production — from raw material selection to finished product.
+        {% endif %}
+      </p>
+      <p class="about-body-text">
+        {% if current_lang == 'ar' %}
+        نحن فخورون بتقديم خدماتنا لقطاع عريض من مستهلكي التجزئة، كبار تجار الجملة، الفنادق، المستشفيات، والمؤسسات الحكومية لتلبية المتطلبات بميزانيات مرنة وخيارات مخصصة.
+        {% else %}
+        We serve retail customers, wholesale buyers, hotels, hospitals, factories, and government institutions, providing tailored solutions for every need and budget.
+        {% endif %}
+      </p>
+      <a href="{{ url_for('about') }}" class="btn btn-primary">
+        {% if current_lang == 'ar' %}تعرف على مسيرتنا الفنية أكثر ←{% else %}Learn More About Us →{% endif %}
+      </a>
+    </div>
+    
+    <div class="metrics-quad-grid">
+      <div class="metric-tile">
+        <div class="metric-tile-icon">🏗️</div>
+        <div class="metric-tile-value">5,000m²</div>
+        <div class="metric-tile-label">{% if current_lang == 'ar' %}المساحة الإنتاجية للمصنع{% else %}Factory Floor{% endif %}</div>
+      </div>
+      <div class="metric-tile">
+        <div class="metric-tile-icon">👷</div>
+        <div class="metric-tile-value">150+</div>
+        <div class="metric-tile-label">{% if current_lang == 'ar' %}كادر وفريق مهني{% else %}Employees{% endif %}</div>
+      </div>
+      <div class="metric-tile">
+        <div class="metric-tile-icon">⚙️</div>
+        <div class="metric-tile-value">5+</div>
+        <div class="metric-tile-label">{% if current_lang == 'ar' %}خطوط إنتاج وآليات{% else %}Machines{% endif %}</div>
+      </div>
+      <div class="metric-tile-highlight">
+        <div class="metric-tile-icon">🌍</div>
+        <div class="metric-tile-value">15+</div>
+        <div class="metric-tile-label">{% if current_lang == 'ar' %}مدن ومناطق مغطاة{% else %}Cities Served{% endif %}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CUSTOMER TESTIMONIALS SHIELDS -->
+<section class="section section-dark no-top-padding">
+  <div class="section-header">
+    <span class="section-eyebrow eyebrow-blue">{% if current_lang == 'ar' %}آراء وشهادات نعتز بها{% else %}What We Say{% endif %}</span>
+    <h2 class="section-title light">{% if current_lang == 'ar' %}ماذا يقول عملاؤنا عنا؟{% else %}Customer Testimonials{% endif %}</h2>
+    <p class="section-subtitle light">{% if current_lang == 'ar' %}شركاء نجاح يثقون بجودة ومعدلات توريد المصنع في شتى أرجاء المنطقة.{% else %}Trusted by thousands of businesses and individuals across the region.{% endif %}</p>
+  </div>
+
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">
+        {% if current_lang == 'ar' %}
+        "نتعامل مع مصنع محمد عيداب منذ سنوات لتوفير الطاولات والكراسي البلاستيكية لسلسلة الفنادق الخاصة بنا. الجودة ممتازة وثابتة، ومواعيد الشحن والتسليم دقيقة للغاية."
+        {% else %}
+        "We've been sourcing plastic chairs and tables from Mohammed Eidab for our hotel chain for years. The quality is consistently excellent and delivery is always on time."
+        {% endif %}
+      </p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">A</div>
+        <div>
+          <div class="testimonial-name">{% if current_lang == 'ar' %}أحمد الرشيدي{% else %}Ahmed Al-Rashidi{% endif %}</div>
+          <div class="testimonial-role">{% if current_lang == 'ar' %}مدير المشتريات، مجموعة فنادق جراند{% else %}Procurement Manager, Grand Hotel Group{% endif %}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">
+        {% if current_lang == 'ar' %}
+        "صناديق وحافظات التخزين الصناعية التي طلبناها ممتازة ولها قدرة تحمل عالية جداً. لقد صمدت في مستودعاتنا لمدة عامين بكفاءة كاملة. تعامل رائع وخدمة عملاء راقية."
+        {% else %}
+        "The industrial pallet boxes we ordered are top-notch. They've held up perfectly in our warehouse for 2 years now. Great value and excellent customer service."
+        {% endif %}
+      </p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">S</div>
+        <div>
+          <div class="testimonial-name">{% if current_lang == 'ar' %}سارة محمد{% else %}Sara Mohammed{% endif %}</div>
+          <div class="testimonial-role">{% if current_lang == 'ar' %}مديرة العمليات، لوجي تيك للمستودعات{% else %}Operations Director, LogiTech Warehousing{% endif %}</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-text">
+        {% if current_lang == 'ar' %}
+        "أفضل مصنع ومورد للمنتجات البلاستيكية في السوق دون منازع. أسعارهم تنافسية، تشكيلتهم واسعة، ولديهم مرونة وسرعة مدهشة في تلبية طلبيات الجملة الضخمة."
+        {% else %}
+        "Best plastic product supplier in the region. Competitive prices, wide range of products, and they always accommodate our bulk orders quickly. Highly recommended."
+        {% endif %}
+      </p>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">K</div>
+        <div>
+          <div class="testimonial-name">{% if current_lang == 'ar' %}خالد العتيبي{% else %}Khalid Al-Otaibi{% endif %}</div>
+          <div class="testimonial-role">{% if current_lang == 'ar' %}مالك سلسلة سوبرماركت العتيبي{% else %}Owner, Al-Otaibi Supermarket Chain{% endif %}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERSISTENT CLOSING ACTION CALL -->
+<section class="section section-light cta-section-wrapper">
+  <div class="cta-constrained-box">
+    <span class="section-eyebrow">{% if current_lang == 'ar' %}ابدأ طلبك الآن{% else %}Get Started{% endif %}</span>
+    <h2 class="section-title" style="margin-bottom:18px;">{% if current_lang == 'ar' %}هل أنت مستعد لتقديم طلبيتك؟{% else %}Ready to Place Your Order?{% endif %}</h2>
+    <p class="section-subtitle" style="margin-bottom:44px;">{% if current_lang == 'ar' %}تصفح كتالوج المنتجات الكامل، وأضف ما تحتاجه إلى السلة، واحصل على أسعار المصنع المباشرة لكافة المشتريات.{% else %}Browse our full catalog, add products to your cart, and get factory-direct pricing on all orders.{% endif %}</p>
+    <div class="cta-button-cluster">
+      <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">{% if current_lang == 'ar' %}تسوق الآن ←{% else %}Shop Now →{% endif %}</a>
+      <a href="{{ url_for('contact') }}" class="btn btn-outline btn-lg cta-btn-secondary-override">{% if current_lang == 'ar' %}طلب تسعيرة خاصة{% else %}Get a Quote{% endif %}</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

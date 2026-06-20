@@ -1,0 +1,334 @@
+{% extends "admin/admin_base.html" %}
+{% block admin_content %}
+
+<style>
+  /* ── Form Layout ────────────────────────────────────────────────────────── */
+  .form-card {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 32px;
+  }
+  .form-card h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 1.3rem;
+    color: #0b1f3a;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 12px;
+  }
+
+  .form-section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #6b7280;
+    margin: 28px 0 12px;
+  }
+
+  .form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 14px;
+  }
+  .form-group.full-width {
+    grid-column: 1 / -1;
+  }
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+  }
+  input[type="text"],
+  input[type="number"],
+  input[type="file"],
+  select,
+  textarea {
+    padding: 10px 12px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: white;
+    transition: border-color 0.15s;
+  }
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: #1e6bff;
+  }
+  textarea { resize: vertical; min-height: 90px; }
+
+  /* ── Checkbox row ───────────────────────────────────────────────────────── */
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border: 1.5px solid #e5e7eb;
+  }
+  .checkbox-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #1e6bff;
+  }
+  .checkbox-row label {
+    margin: 0;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  /* ── Current image preview ──────────────────────────────────────────────── */
+  .image-preview-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #f3f4f6;
+    border-radius: 8px;
+  }
+  .image-preview-wrap img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+  }
+  .image-preview-fallback {
+    width: 72px;
+    height: 72px;
+    background: #e5e7eb;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+  }
+  .image-hint {
+    font-size: 0.78rem;
+    color: #6b7280;
+    margin-top: 4px;
+  }
+
+  /* ── Submit / Cancel buttons ────────────────────────────────────────────── */
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+  }
+  .btn-submit {
+    padding: 12px 28px;
+    background: #1e6bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-submit:hover { background: #0a50cc; }
+  .btn-cancel {
+    padding: 12px 20px;
+    background: #f3f4f6;
+    color: #374151;
+    border: 1.5px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+  }
+  .btn-cancel:hover { background: #e5e7eb; }
+
+  @media (max-width: 600px) {
+    .form-grid-2 { grid-template-columns: 1fr; }
+    .form-card { padding: 20px; }
+  }
+</style>
+
+<div class="card form-card">
+  {#
+    BUG-4b FIX: The original template always showed "Edit Product" regardless of
+    whether the admin was adding or editing.  The route already passes `action`
+    ('Add' or 'Edit'), so we use it here for both the heading and the submit button.
+  #}
+  <h2>
+    {% if action == 'Add' %}
+      ➕ إضافة منتج جديد
+    {% else %}
+      ✏️ تعديل المنتج: {{ product.name }}
+    {% endif %}
+  </h2>
+
+  <form method="POST" enctype="multipart/form-data">
+
+    <!-- ══ SECTION 1 – Core Identity ══════════════════════════════════════ -->
+    <p class="form-section-title">البيانات الأساسية</p>
+
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label for="name">الاسم (English) *</label>
+        <input type="text" id="name" name="name"
+               value="{{ product.name if product else '' }}"
+               placeholder="e.g. Heavy Duty Storage Box" required>
+      </div>
+
+      <div class="form-group">
+        <label for="name_ar">الاسم (العربي)</label>
+        <input type="text" id="name_ar" name="name_ar"
+               value="{{ product.name_ar if product and product.name_ar else '' }}"
+               placeholder="مثال: صندوق تخزين للاستخدام الشاق">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">الوصف التفصيلي</label>
+      <textarea id="description" name="description"
+                placeholder="أدخل وصفاً تفصيلياً للمنتج…">{{ product.description if product and product.description else '' }}</textarea>
+    </div>
+
+    <!-- ══ SECTION 2 – Classification & Pricing ═══════════════════════════ -->
+    <p class="form-section-title">التصنيف والسعر</p>
+
+    <div class="form-grid-2">
+      <!--
+        BUG-1a FIX: This <select name="category"> is the field that was
+        completely absent from the old inline add-form in admin_products.html,
+        causing category=None and the NOT NULL database crash.
+      -->
+      <div class="form-group">
+        <label for="category">التصنيف *</label>
+        <select id="category" name="category" required>
+          <option value="" disabled {% if not product %}selected{% endif %}>— اختر التصنيف —</option>
+          {% for cat in categories %}
+            <option value="{{ cat }}"
+              {% if product and product.category == cat %}selected{% endif %}>
+              {{ cat }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="sku">رمز المنتج (SKU)</label>
+        <input type="text" id="sku" name="sku"
+               value="{{ product.sku if product and product.sku else '' }}"
+               placeholder="e.g. PLT-CHR-001">
+      </div>
+
+      <div class="form-group">
+        <label for="price">السعر (SDG) *</label>
+        <input type="number" id="price" name="price" step="0.01" min="0"
+               value="{{ product.price if product else '0.00' }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="stock">الكمية في المخزون *</label>
+        <input type="number" id="stock" name="stock" min="0"
+               value="{{ product.stock if product else 0 }}" required>
+      </div>
+    </div>
+
+    <!-- ══ SECTION 3 – Physical Specifications ════════════════════════════ -->
+    <p class="form-section-title">المواصفات الفنية</p>
+
+    {#
+      BUG-4c FIX: material, color, weight, dimensions were never in the form,
+      so those columns were always saved as NULL / their model defaults.
+    #}
+    <div class="form-grid-2">
+      <div class="form-group">
+        <label for="material">المادة</label>
+        <input type="text" id="material" name="material"
+               value="{{ product.material if product and product.material else '' }}"
+               placeholder="e.g. High-Quality Plastic">
+      </div>
+
+      <div class="form-group">
+        <label for="color">اللون</label>
+        <input type="text" id="color" name="color"
+               value="{{ product.color if product and product.color else '' }}"
+               placeholder="e.g. White / Blue / Assorted">
+      </div>
+
+      <div class="form-group">
+        <label for="weight">الوزن</label>
+        <input type="text" id="weight" name="weight"
+               value="{{ product.weight if product and product.weight else '' }}"
+               placeholder="e.g. 2.5 kg">
+      </div>
+
+      <div class="form-group">
+        <label for="dimensions">الأبعاد</label>
+        <input type="text" id="dimensions" name="dimensions"
+               value="{{ product.dimensions if product and product.dimensions else '' }}"
+               placeholder="e.g. 60 × 40 × 30 cm">
+      </div>
+    </div>
+
+    <!-- ══ SECTION 4 – Image Upload ════════════════════════════════════════ -->
+    <p class="form-section-title">صورة المنتج</p>
+
+    <!--
+      BUG-3b FIX: Always check product.image for None before building the src URL.
+      BUG-3c FIX: onerror swaps to the emoji fallback if the physical file is absent.
+    -->
+    {% if product and product.image %}
+    <div class="image-preview-wrap">
+      <img
+        src="{{ url_for('static', filename='uploads/' + product.image) }}"
+        alt="{{ product.name }}"
+        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+      >
+      <div class="image-preview-fallback" style="display:none;">📦</div>
+      <div>
+        <strong style="font-size:0.85rem;">الصورة الحالية</strong><br>
+        <small style="color:#6b7280; font-family:monospace;">{{ product.image }}</small>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="form-group">
+      <label for="image">
+        {% if product and product.image %}رفع صورة جديدة (اتركه فارغاً للإبقاء على الحالية)
+        {% else %}رفع صورة المنتج{% endif %}
+      </label>
+      <input type="file" id="image" name="image" accept="image/*">
+      <span class="image-hint">الصيغ المقبولة: JPG، PNG، WEBP — الحجم الأقصى: 5 MB</span>
+    </div>
+
+    <!-- ══ SECTION 5 – Visibility ═══════════════════════════════════════════ -->
+    <p class="form-section-title">الظهور والترتيب</p>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="is_featured" name="is_featured" value="1"
+             {% if product and product.is_featured %}checked{% endif %}>
+      <label for="is_featured">⭐ منتج مميز — يظهر في القسم الرئيسي على الصفحة الرئيسية</label>
+    </div>
+
+    <!-- ══ Actions ══════════════════════════════════════════════════════════ -->
+    <div class="form-actions">
+      <button type="submit" class="btn-submit">
+        {% if action == 'Add' %}➕ إضافة المنتج{% else %}💾 حفظ التعديلات{% endif %}
+      </button>
+      <a href="{{ url_for('admin_products') }}" class="btn-cancel">↩ إلغاء والعودة</a>
+    </div>
+
+  </form>
+</div>
+
+{% endblock %}

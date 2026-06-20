@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+{% block title %}
+  {% if current_lang == 'ar' %}سلة التسوق – محلات محمد عيداب للمنتجات البلاستيكية{% else %}Shopping Cart – Mohammed Eidab For Plastic Products{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+  /* --- Layout & Global Grid --- */
+  .cart-hero {
+    padding: 100px 5% 50px;
+  }
+  
+  .cart-container {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* --- Main Items Table Box --- */
+  .cart-main-box {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--gray-light);
+    overflow: hidden;
+  }
+  
+  .cart-header {
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--gray-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .cart-header h2 {
+    font-size: 1.1rem;
+    color: var(--navy);
+    margin: 0;
+  }
+  .cart-back-link {
+    font-size: 0.85rem;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* --- Cart Item Row --- */
+  .cart-item {
+    padding: 22px 28px;
+    display: grid;
+    grid-template-columns: auto 1fr 100px auto 110px;
+    gap: 20px;
+    align-items: center;
+    border-bottom: 1px solid var(--gray-light);
+  }
+  .cart-item.last-item {
+    border-bottom: none;
+  }
+  
+  .cart-item-title {
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 3px;
+  }
+  .cart-item-category {
+    font-size: 0.78rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  .cart-item-price {
+    text-align: right;
+    min-width: 100px;
+  }
+  .meta-label {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-bottom: 2px;
+  }
+  .meta-value {
+    font-weight: 600;
+    color: var(--navy);
+  }
+
+  .cart-item-subtotal {
+    text-align: right;
+    min-width: 110px;
+  }
+  .subtotal-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .remove-link {
+    font-size: 0.75rem;
+    color: #dc2626;
+    margin-top: 4px;
+    display: block;
+    text-decoration: none;
+  }
+
+  /* --- Summary Sidebar --- */
+  .cart-summary {
+    background: var(--navy);
+    color: white;
+    padding: 32px;
+    border-radius: 20px;
+  }
+  .cart-summary-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 12px;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+  }
+  .summary-row.total {
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 16px;
+    margin-top: 16px;
+  }
+  .summary-row-tax {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.8rem;
+  }
+  .summary-shipping-free {
+    color: rgba(34, 197, 94, 0.9);
+  }
+  .summary-total-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+  }
+  .summary-perks {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .perk-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.55);
+    margin-bottom: 8px;
+  }
+
+  /* --- Empty State --- */
+  .cart-empty-state {
+    text-align: center;
+    padding: 80px 0;
+  }
+  .cart-empty-icon {
+    font-size: 5rem;
+    margin-bottom: 24px;
+  }
+  .cart-empty-state h2 {
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+  .cart-empty-state p {
+    color: var(--text-light);
+    margin-bottom: 32px;
+  }
+
+  /* ==========================================================================
+     MOBILE RESPONSIVENESS
+     ========================================================================== */
+  @media (max-width: 992px) {
+    .cart-container {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .cart-item {
+      grid-template-columns: auto 1fr;
+      gap: 16px;
+      padding: 20px;
+    }
+    .cart-item-price, 
+    .cart-item-qty-form, 
+    .cart-item-subtotal {
+      grid-column: span 2;
+      text-align: left;
+      min-width: unset;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cart-item-qty-form {
+      margin: 4px 0;
+    }
+    .cart-item-price::before {
+      content: attr(data-label);
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+    .cart-item-subtotal::before {
+      content: attr(data-label);
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+    .cart-item-price .meta-label,
+    .cart-item-subtotal .meta-label {
+      display: none;
+    }
+    .remove-link {
+      margin-top: 0;
+    }
+  }
+</style>
+
+<!-- Jinja Translation Mapping Dictionaries -->
+{% set cat_translations = {
+  'Plastic Chairs': 'كراسي بلاستيكية',
+  'Plastic Tables': 'طاولات بلاستيكية',
+  'Plastic Buckets': 'جراكن وجرادل',
+  'Plastic Containers': 'حافظات وبوكسات',
+  'Storage Products': 'صناديق تخزين',
+  'Household Products': 'أدوات منزلية',
+  'Industrial Products': 'منتجات صناعية'
+} %}
+
+<!-- HERO -->
+<div class="page-hero cart-hero">
+  <h1>{% if current_lang == 'ar' %}سلة التسوق{% else %}Shopping Cart{% endif %}</h1>
+  <p>{% if current_lang == 'ar' %}راجع المنتجات المختارة قبل إتمام الطلب{% else %}Review your items before checkout{% endif %}</p>
+</div>
+
+<!-- CART SECTION -->
+<section class="section section-gray" style="padding-top: 48px;">
+  {% if cart_items %}
+  <div class="cart-container">
+
+    <!-- CART ITEMS CONTAINER -->
+    <div>
+      <div class="cart-main-box">
+        <div class="cart-header">
+          <h2>
+            {% if current_lang == 'ar' %}
+              لديك ({{ cart_items|length }}) {% if cart_items|length == 1 %}منتج واحد{% else %}منتجات{% endif %}
+            {% else %}
+              {{ cart_items|length }} Item{{ 's' if cart_items|length != 1 }}
+            {% endif %}
+          </h2>
+          <a href="{{ url_for('products') }}" class="cart-back-link">
+            {% if current_lang == 'ar' %}← العودة لمتابعة التسوق{% else %}← Continue Shopping{% endif %}
+          </a>
+        </div>
+
+        {% set cat_emojis = {'Plastic Chairs': '🪑', 'Plastic Tables': '🪵', 'Plastic Buckets': '🪣', 'Plastic Containers': '📦', 'Storage Products': '🗄️', 'Household Products': '🏠', 'Industrial Products': '🏭'} %}
+
+        {% for item in cart_items %}
+        <div class="cart-item {{ 'last-item' if loop.last else '' }}">
+
+          <!-- PRODUCT THUMBNAIL -->
+          <div class="cart-product-thumb">
+            {{ cat_emojis.get(item.product.category, '📦') }}
+          </div>
+
+          <!-- INFO -->
+          <div>
+            <div class="cart-item-title">
+              {{ item.product.name_ar if (current_lang == 'ar' and item.product.name_ar) else item.product.name }}
+            </div>
+            <div class="cart-item-category">
+              {{ cat_translations.get(item.product.category, item.product.category) if current_lang == 'ar' else item.product.category }}
+            </div>
+          </div>
+
+          <!-- UNIT PRICE (Dynamic Label for Mobile View via Data-Label Attribute) -->
+          <div class="cart-item-price" data-label="{% if current_lang == 'ar' %}سعر الوحدة:{% else %}Unit Price:{% endif %}">
+            <div class="meta-label">{% if current_lang == 'ar' %}سعر الوحدة{% else %}Unit Price{% endif %}</div>
+            <div class="meta-value">
+              {{ "%.2f"|format(item.product.price) }} 
+              <span>{% if current_lang == 'ar' %}جنيه{% else %}SDG{% endif %}</span>
+            </div>
+          </div>
+
+          <!-- QUANTITY INTERACTION -->
+          <form action="{{ url_for('update_cart', product_id=item.product.id) }}" method="post" class="cart-item-qty-form">
+            <div class="qty-control">
+              <button type="button" class="qty-btn" onclick="changeQtyAndSubmit(this, -1)">−</button>
+              <input type="number" name="quantity" id="qty-{{ item.product.id }}" value="{{ item.quantity }}" min="1" class="qty-input" onchange="this.form.submit()">
+              <button type="button" class="qty-btn" onclick="changeQtyAndSubmit(this, 1)">+</button>
+            </div>
+          </form>
+
+          <!-- SUBTOTAL & LINE REMOVAL -->
+          <div class="cart-item-subtotal" data-label="{% if current_lang == 'ar' %}المجموع الفرعي:{% else %}Subtotal:{% endif %}">
+            <div class="meta-label">{% if current_lang == 'ar' %}المجموع الفرعي{% else %}Subtotal{% endif %}</div>
+            <div>
+              <span class="subtotal-value">{{ "%.2f"|format(item.subtotal) }}</span>
+              <span style="font-size:0.75rem; color:var(--text-light)">{% if current_lang == 'ar' %}جنيه{% else %}SDG{% endif %}</span>
+              <a href="{{ url_for('remove_from_cart', product_id=item.product.id) }}" class="remove-link">
+                ✕ {% if current_lang == 'ar' %}إزالة{% else %}Remove{% endif %}
+              </a>
+            </div>
+          </div>
+
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ORDER SUMMARY SIDEBAR -->
+    <div class="cart-summary">
+      <div class="cart-summary-title">{% if current_lang == 'ar' %}ملخص الطلب{% else %}Order Summary{% endif %}</div>
+
+      <div class="summary-row">
+        <span>{% if current_lang == 'ar' %}المنتجات ({{ cart_items|length }}){% else %}Items ({{ cart_items|length }}){% endif %}</span>
+        <span>{{ "%.2f"|format(total) }} {% if current_lang == 'ar' %}جنيه{% else %}SDG{% endif %}</span>
+      </div>
+      <div class="summary-row">
+        <span>{% if current_lang == 'ar' %}تكلفة الشحن{% else %}Shipping{% endif %}</span>
+        <span class="summary-shipping-free">{% if current_lang == 'ar' %}مجاني{% else %}Free{% endif %}</span>
+      </div>
+      <div class="summary-row summary-row-tax">
+        <span>{% if current_lang == 'ar' %}الضريبة (قيمة مضافة 15%){% else %}Tax (VAT 15%){% endif %}</span>
+        <span>{% if current_lang == 'ar' %}شاملة الضريبة{% else %}Included{% endif %}</span>
+      </div>
+      <div class="summary-row total">
+        <span>{% if current_lang == 'ar' %}الإجمالي الكلي{% else %}Total{% endif %}</span>
+        <span class="summary-total-val">{{ "%.2f"|format(total) }} {% if current_lang == 'ar' %}جنيه{% else %}SDG{% endif %}</span>
+      </div>
+
+      <a href="{{ url_for('checkout') }}" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 24px; padding: 15px;">
+        {% if current_lang == 'ar' %}المتابعة لإتمام الشراء ←{% else %}Proceed to Checkout →{% endif %}
+      </a>
+      
+      <a href="{{ url_for('products') }}" class="btn btn-outline" style="width: 100%; justify-content: center; margin-top: 12px; padding: 12px; font-size: 0.85rem; color: #fff; border-color: rgba(255,255,255,0.2);">
+        {% if current_lang == 'ar' %}← العودة لمتابعة التسوق{% else %}← Continue Shopping{% endif %}
+      </a>
+
+      <!-- VALUE TRUST PERKS -->
+      <div class="summary-perks">
+        {% set perks_data = [
+          ('🔒', 'دفع آمن ومشفر', 'Secure Checkout'),
+          ('🚚', 'توصيل مجاني لكافة الطلبات', 'Free Delivery'),
+          ('↩️', 'سياسة إرجاع مرنة خلال 30 يوماً', '30-Day Returns')
+        ] %}
+        {% for icon, ar_text, en_text in perks_data %}
+        <div class="perk-item">
+          <span>{{ icon }}</span> {{ ar_text if current_lang == 'ar' else en_text }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  {% else %}
+  <!-- EMPTY STATE FOR ZERO INVENTORY CART -->
+  <div class="cart-empty-state">
+    <div class="cart-empty-icon">🛒</div>
+    <h2>{% if current_lang == 'ar' %}سلة التسوق فارغة حالياً{% else %}Your Cart is Empty{% endif %}</h2>
+    <p>{% if current_lang == 'ar' %}لم تقم بإضافة أي منتجات إلى السلة بعد. تصفح منتجاتنا المميزة للبدء.{% else %}Add some products to get started.{% endif %}</p>
+    <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">
+      {% if current_lang == 'ar' %}تصفح المنتجات المتاحة الآن ←{% else %}Browse Products →{% endif %}
+    </a>
+  </div>
+  {% endif %}
+</section>
+
+<script>
+function changeQtyAndSubmit(btn, delta) {
+  const form = btn.closest('form');
+  const input = form.querySelector('input[name="quantity"]');
+  const newVal = Math.max(1, parseInt(input.value) + delta);
+  input.value = newVal;
+  form.submit();
+}
+</script>
+{% endblock %}

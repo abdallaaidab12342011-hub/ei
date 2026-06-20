@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if current_lang == 'ar' %}اتصل بنا – مصنع محمد عيداب للمنتجات البلاستيكية{% else %}Contact Us – Mohammed Eidab For Plastic Products{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+  /* --- Layout & Structure --- */
+  .contact-hero-eyebrow {
+    color: rgba(77, 139, 255, 0.9);
+  }
+  
+  .contact-container-section {
+    padding-top: 60px;
+  }
+
+  /* --- Contact Info Sidebar Card --- */
+  .contact-info-heading {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    color: white;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .contact-info-subtitle {
+    color: var(--gray);
+    font-size: 0.85rem;
+    margin-bottom: 36px;
+  }
+  .contact-info-subtext {
+    font-size: 0.82rem;
+    color: var(--gray);
+    opacity: 0.7;
+  }
+
+  /* --- Message Form Box --- */
+  .contact-form-box {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--gray-light);
+    padding: 44px;
+  }
+  .contact-form-title {
+    font-size: 1.5rem;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .contact-form-desc {
+    color: var(--text-light);
+    font-size: 0.88rem;
+    margin-bottom: 32px;
+  }
+  .subject-select {
+    border: 1.5px solid var(--gray-light);
+  }
+  .textarea-msg {
+    resize: vertical;
+  }
+  .btn-submit-msg {
+    width: 100%;
+    justify-content: center;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* --- Quick Links Grid --- */
+  .contact-quick-links {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .contact-link-card {
+    background: white;
+    border: 1px solid var(--gray-light);
+    border-radius: 14px;
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+  .contact-link-card:hover {
+    border-color: var(--accent);
+  }
+  .contact-link-icon {
+    font-size: 1.8rem;
+  }
+  .contact-link-title {
+    font-weight: 600;
+    color: var(--navy);
+    font-size: 0.9rem;
+  }
+  .contact-link-desc {
+    font-size: 0.78rem;
+    color: var(--text-light);
+  }
+
+  /* ==========================================================================
+     MOBILE RESPONSIVENESS
+     ========================================================================== */
+  @media (max-width: 992px) {
+    .contact-form-box {
+      padding: 32px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .contact-form-box {
+      padding: 24px;
+    }
+    .contact-quick-links {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  }
+</style>
+
+<!-- HERO INTRODUCTORY SECTION -->
+<div class="page-hero">
+  <span class="section-eyebrow contact-hero-eyebrow">
+    {% if current_lang == 'ar' %}تواصل معنا{% else %}Get in Touch{% endif %}
+  </span>
+  <h1>{% if current_lang == 'ar' %}اتصل بنا{% else %}Contact Us{% endif %}</h1>
+  <p>{% if current_lang == 'ar' %}نحن هنا لمساعدتك والإجابة على استفساراتك في أي وقت.{% else %}We're here to help. Reach out anytime.{% endif %}</p>
+</div>
+
+<!-- CONTACT MAIN SECTION -->
+<section class="section section-gray contact-container-section">
+  <div class="contact-grid">
+
+    <!-- CONTACT INFO SIDEBAR CARD -->
+    <div class="contact-info-card">
+      <h2 class="contact-info-heading">
+        {% if current_lang == 'ar' %}مصنع محمد عيداب<br>للمنتجات البلاستيكية{% else %}Mohammed Eidab<br>For Plastic Products{% endif %}
+      </h2>
+      <p class="contact-info-subtitle">
+        {% if current_lang == 'ar' %}شريككم الموثوق في تلبية المتطلبات البلاستيكية منذ 2010.{% else %}Your trusted plastic products partner since 2010.{% endif %}
+      </p>
+
+      <div class="contact-info-item">
+        <div class="contact-info-icon">📍</div>
+        <div>
+          <div class="contact-info-label">{% if current_lang == 'ar' %}العنوان{% else %}Address{% endif %}</div>
+          <div class="contact-info-value">
+            {% if current_lang == 'ar' %}أم درمان<br>الخرطوم، السودان{% else %}OMDURMAN<br>KHARTOUM, SUDAN{% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="contact-info-item">
+        <div class="contact-info-icon">📞</div>
+        <div>
+          <div class="contact-info-label">{% if current_lang == 'ar' %}رقم الهاتف{% else %}Phone{% endif %}</div>
+          <div class="contact-info-value" dir="ltr">+249 115766604</div>
+          <div class="contact-info-subtext" dir="ltr">{% if current_lang == 'ar' %}+249 11 576 6604 (الخط الأرضي){% else %}+249 11 576 6604 (Landline){% endif %}</div>
+        </div>
+      </div>
+
+      <div class="contact-info-item">
+        <div class="contact-info-icon">📧</div>
+        <div>
+          <div class="contact-info-label">{% if current_lang == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %}</div>
+          <div class="contact-info-value">info@meidab-plastic.com</div>
+          <div class="contact-info-subtext">sales@meidab-plastic.com</div>
+        </div>
+      </div>
+
+      <div class="contact-info-item">
+        <div class="contact-info-icon">🕐</div>
+        <div>
+          <div class="contact-info-label">{% if current_lang == 'ar' %}ساعات العمل الرسمية{% else %}Business Hours{% endif %}</div>
+          <div class="contact-info-value">
+            {% if current_lang == 'ar' %}الأحد – الخميس: 8:00 صباحاً – 6:00 مساءً{% else %}Sunday – Thursday: 8:00 AM – 6:00 PM{% endif %}
+          </div>
+          <div class="contact-info-subtext">
+            {% if current_lang == 'ar' %}الجمعة – السبت: مغلق{% else %}Friday – Saturday: Closed{% endif %}
+          </div>
+        </div>
+      </div>
+
+      {% set whatsapp_msg = 'مرحباً،%20أنا%20مهتم%20بمنتجاتكم%20البلاستيكية%20وأود%20الاستفسار.' if current_lang == 'ar' else 'Hello,%20I%20am%20interested%20in%20your%20plastic%20products.' %}
+      <button class="whatsapp-btn" onclick="window.open('https://wa.me/249115766604?text={{ whatsapp_msg }}', '_blank')">
+        💬 {% if current_lang == 'ar' %}تواصل معنا عبر الواتساب{% else %}Chat on WhatsApp{% endif %}
+      </button>
+    </div>
+
+    <!-- FEEDBACK MESSAGE FORM & QUICK LINKS -->
+    <div>
+      <div class="contact-form-box">
+        <h2 class="contact-form-title">{% if current_lang == 'ar' %}أرسل لنا رسالة مباشرة{% else %}Send Us a Message{% endif %}</h2>
+        <p class="contact-form-desc">{% if current_lang == 'ar' %}نقوم بالرد على رسائلكم في غضون 24 ساعة عمل.{% else %}We respond within 24 business hours.{% endif %}</p>
+
+        <form method="post" action="{{ url_for('contact') }}">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">{% if current_lang == 'ar' %}الاسم بالكامل *{% else %}Your Name *{% endif %}</label>
+              <input type="text" name="name" class="form-control" placeholder="{% if current_lang == 'ar' %}محمد علي{% else %}Mohammed Ali{% endif %}" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{% if current_lang == 'ar' %}رقم الهاتف{% else %}Phone Number{% endif %}</label>
+              <input type="tel" name="phone" class="form-control" placeholder="{% if current_lang == 'ar' %}+249 11 576 6604{% else %}+249 11 576 6604{% endif %}">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{% if current_lang == 'ar' %}البريد الإلكتروني *{% else %}Email Address *{% endif %}</label>
+            <input type="email" name="email" class="form-control" placeholder="your@email.com" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{% if current_lang == 'ar' %}عنوان الموضوع{% else %}Subject{% endif %}</label>
+            <select name="subject" class="form-control sort-select subject-select">
+              {% if current_lang == 'ar' %}
+                <option value="Product Inquiry">استفسار عن منتج</option>
+                <option value="Wholesale / Bulk Order">طلب جملة / كميات كبيرة</option>
+                <option value="Price Quote Request">طلب عرض سعر مخصص</option>
+                <option value="Order Status">متابعة حالة طلبية</option>
+                <option value="General Inquiry">استفسار عام</option>
+                <option value="Other">أخرى</option>
+              {% else %}
+                <option value="Product Inquiry">Product Inquiry</option>
+                <option value="Wholesale / Bulk Order">Wholesale / Bulk Order</option>
+                <option value="Price Quote Request">Price Quote Request</option>
+                <option value="Order Status">Order Status</option>
+                <option value="General Inquiry">General Inquiry</option>
+                <option value="Other">Other</option>
+              {% endif %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{% if current_lang == 'ar' %}تفاصيل الرسالة *{% else %}Message *{% endif %}</label>
+            <textarea name="message" class="form-control textarea-msg" rows="5" placeholder="{% if current_lang == 'ar' %}برجاء إدخال تفاصيل طلبك، صنف المنتج، الكمية المطلوبة والمواصفات التي تحتاجها هنا...{% else %}Tell us about your requirements, quantity needed, product type, etc.{% endif %}" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-submit-msg">
+            📤 {% if current_lang == 'ar' %}إرسال الرسالة الآن{% else %}Send Message{% endif %}
+          </button>
+        </form>
+      </div>
+
+      <!-- INTERACTIVE QUICK LINKS SUB-GRID -->
+      <div class="contact-quick-links">
+        {% set quick_links_matrix = [
+          ('📦', 'Browse Products', 'تصفح المنتجات المتاحة', 'View our full catalog', 'عرض الكتالوج والمواصفات الكاملة', url_for('products')),
+          ('🛒', 'Place an Order', 'بدء تقديم طلبية', 'Add items to cart', 'إضافة الأصناف مباشرة إلى السلة', url_for('products'))
+        ] %}
+        
+        {% for icon, title_en, title_ar, desc_en, desc_ar, route_link in quick_links_matrix %}
+        <a href="{{ route_link }}" class="contact-link-card">
+          <div class="contact-link-icon">{{ icon }}</div>
+          <div>
+            <div class="contact-link-title">
+              {{ title_ar if current_lang == 'ar' else title_en }}
+            </div>
+            <div class="contact-link-desc">
+              {{ desc_ar if current_lang == 'ar' else desc_en }}
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% block title %}
+  {% if current_lang == 'ar' %}المنتجات – محلات محمد عيداب للمنتجات البلاستيكية{% else %}Products – Mohammed Eidab For Plastic Products{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+  /* --- Structural Layout Configurations --- */
+  .catalog-eyebrow {
+    color: rgba(77, 139, 255, 0.9);
+  }
+  .catalog-section {
+    padding-top: 48px;
+  }
+  .filters-spacer {
+    flex: 1;
+  }
+
+  /* --- Product Status Metrics Summary --- */
+  .product-count-summary {
+    margin-bottom: 28px;
+    color: var(--text-light);
+    font-size: 0.875rem;
+  }
+  .count-highlight-navy {
+    color: var(--navy);
+  }
+  .count-highlight-accent {
+    color: var(--accent);
+  }
+
+  /* --- Product Grid Elements --- */
+  .product-sku-meta {
+    font-size: 0.72rem;
+    color: var(--gray);
+    margin-bottom: 14px;
+    letter-spacing: 1px;
+  }
+
+  /* --- Empty State Fallback Screen --- */
+  .empty-catalog-container {
+    text-align: center;
+    padding: 80px 0;
+  }
+  .empty-catalog-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+  }
+  .empty-catalog-title {
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+  .empty-catalog-text {
+    color: var(--text-light);
+    margin-bottom: 28px;
+  }
+
+  /* ==========================================================================
+     MOBILE RESPONSIVENESS & BREAKPOINTS
+     ========================================================================== */
+  @media (max-width: 992px) {
+    .filters-bar {
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .filters-spacer {
+      display: none;
+    }
+    .search-input-bar {
+      flex-grow: 1;
+      min-width: 180px;
+    }
+    .sort-select {
+      flex-grow: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .catalog-section {
+      padding-top: 32px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .filters-bar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .filter-label {
+      margin-bottom: 2px;
+    }
+    .search-input-bar {
+      width: 100%;
+    }
+  }
+</style>
+
+<!-- Jinja Translation Mapping Dictionaries -->
+{% set cat_translations = {
+  'Plastic Chairs': 'كراسي بلاستيكية',
+  'Plastic Tables': 'طاولات بلاستيكية',
+  'Plastic Buckets': 'جراكن وجرادل',
+  'Plastic Containers': 'حافظات وبوكسات',
+  'Storage Products': 'صناديق تخزين',
+  'Household Products': 'أدوات منزلية',
+  'Industrial Products': 'منتجات صناعية'
+} %}
+
+<div class="page-hero">
+  <span class="section-eyebrow catalog-eyebrow">
+    {% if current_lang == 'ar' %}كتالوج المنتجات{% else %}Our Catalog{% endif %}
+  </span>
+  <h1>{% if current_lang == 'ar' %}جميع المنتجات{% else %}All Products{% endif %}</h1>
+  <p>{% if current_lang == 'ar' %}منتجات بلاستيكية عالية الجودة تلبي كافة احتياجاتكم{% else %}High-quality plastic products for every need{% endif %}</p>
+</div>
+
+<section class="section section-gray catalog-section">
+
+  <!-- FILTERS BAR -->
+  <form method="get" action="{{ url_for('products') }}">
+    <div class="filters-bar">
+      <span class="filter-label">{% if current_lang == 'ar' %}تصفية:{% else %}Filter:{% endif %}</span>
+      <a href="{{ url_for('products') }}" class="filter-btn {{ 'active' if not current_category else '' }}">
+        {% if current_lang == 'ar' %}الكل{% else %}All{% endif %}
+      </a>
+      
+      {% for cat in categories %}
+      <a href="{{ url_for('products', category=cat, search=search, sort=sort) }}" class="filter-btn {{ 'active' if current_category == cat else '' }}">
+        {{ cat_translations.get(cat, cat) if current_lang == 'ar' else cat }}
+      </a>
+      {% endfor %}
+
+      <div class="filters-spacer"></div>
+
+      <div class="search-input-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" name="search" placeholder="{% if current_lang == 'ar' %}ابحث عن منتج...{% else %}Search products…{% endif %}" value="{{ search }}">
+        {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
+      </div>
+
+      <select name="sort" class="sort-select" onchange="this.form.submit()">
+        <option value="name" {{ 'selected' if sort == 'name' }}>
+          {% if current_lang == 'ar' %}الترتيب: الاسم{% else %}Sort: Name{% endif %}
+        </option>
+        <option value="price_asc" {{ 'selected' if sort == 'price_asc' }}>
+          {% if current_lang == 'ar' %}السعر: من الأقل للأعلى{% else %}Price: Low → High{% endif %}
+        </option>
+        <option value="price_desc" {{ 'selected' if sort == 'price_desc' }}>
+          {% if current_lang == 'ar' %}السعر: من الأعلى للأقل{% else %}Price: High → Low{% endif %}
+        </option>
+      </select>
+
+      <button type="submit" class="btn btn-primary btn-sm">{% if current_lang == 'ar' %}بحث{% else %}Search{% endif %}</button>
+    </div>
+  </form>
+
+  <!-- PRODUCT COUNT METRICS SUMMARY -->
+  <div class="product-count-summary">
+    {% if current_lang == 'ar' %}
+      عرض <strong class="count-highlight-navy">{{ products|length }}</strong> منتجاً
+      {% if current_category %} في قسم <strong class="count-highlight-accent">{{ cat_translations.get(current_category, current_category) }}</strong>{% endif %}
+      {% if search %} عن "<strong class="count-highlight-navy">{{ search }}</strong>"{% endif %}
+    {% else %}
+      Showing <strong class="count-highlight-navy">{{ products|length }}</strong> products
+      {% if current_category %} in <strong class="count-highlight-accent">{{ current_category }}</strong>{% endif %}
+      {% if search %} for "<strong class="count-highlight-navy">{{ search }}</strong>"{% endif %}
+    {% endif %}
+  </div>
+
+  <!-- PRODUCTS GRID -->
+  {% if products %}
+  {% set cat_emojis = {'Plastic Chairs': '🪑', 'Plastic Tables': '🪵', 'Plastic Buckets': '🪣', 'Plastic Containers': '📦', 'Storage Products': '🗄️', 'Household Products': '🏠', 'Industrial Products': '🏭'} %}
+  <div class="products-grid">
+    {% for product in products %}
+    <div class="product-card" data-href="{{ url_for('product_detail', product_id=product.id) }}" onclick="window.location.href=this.dataset.href">
+      <div class="product-card-img">
+        <div class="product-emoji">{{ cat_emojis.get(product.category, '📦') }}</div>
+        {% if product.is_featured %}
+        <div class="product-card-badge">{% if current_lang == 'ar' %}مميز{% else %}Featured{% endif %}</div>
+        {% endif %}
+      </div>
+      <div class="product-card-body">
+        <div class="product-card-category">
+          {{ cat_translations.get(product.category, product.category) if current_lang == 'ar' else product.category }}
+        </div>
+        <div class="product-card-name">{{ product.name }}</div>
+        <div class="product-card-desc">{{ product.description }}</div>
+        
+        {% if product.sku %}
+        <div class="product-sku-meta">
+          {% if current_lang == 'ar' %}رمز المنتج (SKU):{% else %}SKU:{% endif %} {{ product.sku }}
+        </div>
+        {% endif %}
+        
+        <div class="product-card-footer">
+          <div class="product-price">
+            {{ "%.2f"|format(product.price) }} 
+            <span>{% if current_lang == 'ar' %}جنيه{% else %}SDG{% endif %}</span>
+          </div>
+          <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">
+            {% if current_lang == 'ar' %}عرض التفاصيل{% else %}View →
+            {% endif %}
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- PAGINATION SYSTEM -->
+  {% if pagination.pages > 1 %}
+  <div class="pagination">
+    {% if pagination.has_prev %}
+    <a href="{{ url_for('products', page=pagination.prev_num, category=current_category, search=search, sort=sort) }}" class="page-btn">←</a>
+    {% else %}
+    <span class="page-btn disabled">←</span>
+    {% endif %}
+
+    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+      {% if p %}
+        <a href="{{ url_for('products', page=p, category=current_category, search=search, sort=sort) }}" class="page-btn {{ 'active' if p == pagination.page }}">{{ p }}</a>
+      {% else %}
+        <span class="page-btn disabled">…</span>
+      {% endif %}
+    {% endfor %}
+
+    {% if pagination.has_next %}
+    <a href="{{ url_for('products', page=pagination.next_num, category=current_category, search=search, sort=sort) }}" class="page-btn">→</a>
+    {% else %}
+    <span class="page-btn disabled">→</span>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% else %}
+  <!-- EMPTY STATE FALLBACK CASE -->
+  <div class="empty-catalog-container">
+    <div class="empty-catalog-icon">🔍</div>
+    <h3 class="empty-catalog-title">
+      {% if current_lang == 'ar' %}لم يتم العثور على منتجات{% else %}No Products Found{% endif %}
+    </h3>
+    <p class="empty-catalog-text">
+      {% if current_lang == 'ar' %}يرجى تعديل خيارات البحث أو تصفح الأقسام الأخرى.{% else %}Try adjusting your search or browse all categories.{% endif %}
+    </p>
+    <a href="{{ url_for('products') }}" class="btn btn-primary">
+      {% if current_lang == 'ar' %}إعادة تعيين الفلاتر{% else %}Clear Filters{% endif %}
+    </a>
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}

@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+{% block title %}
+  {% if current_lang == 'ar' %}{{ product.name }} – محلات محمد عيداب للمنتجات البلاستيكية{% else %}{{ product.name }} – Mohammed Eidab For Plastic Products{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+  /* --- Layout & Structural Padding --- */
+  .detail-section {
+    padding-top: 100px;
+  }
+  .breadcrumb-active-item {
+    color: var(--text);
+  }
+  
+  /* --- Featured Badge --- */
+  .featured-badge-wrap {
+    margin-top: 12px;
+  }
+  .featured-badge-pill {
+    background: rgba(30, 107, 255, 0.1);
+    color: var(--accent);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+
+  /* --- Product Information Typography --- */
+  .product-detail-meta-cat {
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .product-detail-heading {
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    color: var(--navy);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+  .product-detail-sku {
+    font-size: 0.78rem;
+    color: var(--gray);
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+  .product-detail-stock-wrap {
+    margin-bottom: 24px;
+  }
+  
+  /* --- Price & Description --- */
+  .product-detail-price-box {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 28px;
+    line-height: 1;
+  }
+  .product-detail-currency {
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--text-light);
+  }
+  .product-detail-description {
+    color: var(--text-light);
+    line-height: 1.8;
+    margin-bottom: 28px;
+  }
+
+  /* --- Specifications Table --- */
+  .product-specs-heading {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  /* --- Cart Action Interface --- */
+  .cart-add-form {
+    margin-top: 28px;
+  }
+  .cart-add-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .btn-add-to-cart-override {
+    flex: 1;
+    min-width: 200px;
+  }
+  .out-of-stock-notice {
+    margin-top: 28px;
+  }
+
+  /* --- Core Trust Badges --- */
+  .trust-badges-footer-row {
+    display: flex;
+    gap: 20px;
+    margin-top: 28px;
+    flex-wrap: wrap;
+  }
+  .trust-badge-footer-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--text-light);
+  }
+
+  /* ==========================================================================
+     MOBILE RESPONSIVENESS
+     ========================================================================== */
+  @media (max-width: 768px) {
+    .detail-section {
+      padding-top: 80px;
+    }
+    .product-detail-grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+</style>
+
+<!-- Jinja Translation Mapping Dictionaries -->
+{% set cat_translations = {
+  'Plastic Chairs': 'كراسي بلاستيكية',
+  'Plastic Tables': 'طاولات بلاستيكية',
+  'Plastic Buckets': 'جراكن وجرادل',
+  'Plastic Containers': 'حافظات وبوكسات',
+  'Storage Products': 'صناديق تخزين',
+  'Household Products': 'أدوات منزلية',
+  'Industrial Products': 'منتجات صناعية'
+} %}
+
+<section class="section section-light detail-section">
+  <!-- BREADCRUMB NAVIGATION -->
+  <div class="breadcrumb">
+    <a href="{{ url_for('index') }}">{% if current_lang == 'ar' %}الرئيسية{% else %}Home{% endif %}</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="{{ url_for('products') }}">{% if current_lang == 'ar' %}المنتجات{% else %}Products{% endif %}</a>
+    <span class="breadcrumb-sep">›</span>
+    <a href="{{ url_for('products', category=product.category) }}">
+      {{ cat_translations.get(product.category, product.category) if current_lang == 'ar' else product.category }}
+    </a>
+    <span class="breadcrumb-sep">›</span>
+    <span class="breadcrumb-active-item">{{ product.name }}</span>
+  </div>
+
+  {% set cat_emojis = {'Plastic Chairs': '🪑', 'Plastic Tables': '🪵', 'Plastic Buckets': '🪣', 'Plastic Containers': '📦', 'Storage Products': '🗄️', 'Household Products': '🏠', 'Industrial Products': '🏭'} %}
+
+  <div class="product-detail-grid">
+    <!-- PRODUCT IMAGE DISPLAY -->
+    <div>
+      <div class="product-image-main">
+    <!-- The ?t= timestamp forces the browser to treat it as a new file -->
+    <img src="{{ url_for('static', filename='uploads/' + (product.image or 'default.jpg')) }}?t={{ range(1000, 9999) | random }}" 
+         alt="{{ product.name }}">
+</div>
+      {% if product.is_featured %}
+      <div class="featured-badge-wrap">
+        <span class="featured-badge-pill">
+          {% if current_lang == 'ar' %}⭐ منتج مميز{% else %}⭐ Featured Product{% endif %}
+        </span>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- PRODUCT DETAIL CONTENT -->
+    <div>
+      <div class="product-detail-meta-cat">
+        {{ cat_translations.get(product.category, product.category) if current_lang == 'ar' else product.category }}
+      </div>
+      <h1 class="product-detail-heading">{{ product.name }}</h1>
+
+      {% if product.sku %}
+      <div class="product-detail-sku">
+        {% if current_lang == 'ar' %}رمز المنتج (SKU):{% else %}SKU:{% endif %} {{ product.sku }}
+      </div>
+      {% endif %}
+
+      <!-- LIVE STOCK INVENTORY METRICS -->
+      <div class="product-detail-stock-wrap">
+        {% if product.stock > 20 %}
+          <span class="stock-badge in-stock">
+            {% if current_lang == 'ar' %}✓ متوفر في المخزن ({{ product.stock }} وحدة){% else %}✓ In Stock ({{ product.stock }} units){% endif %}
+          </span>
+        {% elif product.stock > 0 %}
+          <span class="stock-badge low-stock">
+            {% if current_lang == 'ar' %}⚠ كمية محدودة (متبقي {{ product.stock }}){% else %}⚠ Low Stock ({{ product.stock }} left){% endif %}
+          </span>
+        {% else %}
+          <span class="stock-badge out-stock">
+            {% if current_lang == 'ar' %}✕ غير متوفر حالياً{% else %}✕ Out of Stock{% endif %}
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- INTERNATIONALLY FORMATTED LOCALIZED PRICE -->
+      <div class="product-detail-price-box">
+        {{ "%.2f"|format(product.price) }} 
+        <span class="product-detail-currency">{% if current_lang == 'ar' %}جنيه سوداني{% else %}SDG{% endif %}</span>
+      </div>
+
+      <!-- DYNAMIC PROFILE DESCRIPTION -->
+      {% if product.description %}
+      <p class="product-detail-description">{{ product.description }}</p>
+      {% endif %}
+
+      <!-- TECHNICAL SPECIFICATIONS MATRIX -->
+      <div class="product-specs">
+        <h3 class="product-specs-heading">{% if current_lang == 'ar' %}المواصفات الفنية{% else %}Specifications{% endif %}</h3>
+        
+        {% if product.material %}
+        <div class="spec-row">
+          <span class="spec-label">{% if current_lang == 'ar' %}المادة الخام{% else %}Material{% endif %}</span>
+          <span class="spec-value">{{ product.material }}</span>
+        </div>
+        {% endif %}
+        
+        {% if product.color %}
+        <div class="spec-row">
+          <span class="spec-label">{% if current_lang == 'ar' %}اللون{% else %}Color{% endif %}</span>
+          <span class="spec-value">{{ product.color }}</span>
+        </div>
+        {% endif %}
+        
+        {% if product.weight %}
+        <div class="spec-row">
+          <span class="spec-label">{% if current_lang == 'ar' %}الوزن{% else %}Weight{% endif %}</span>
+          <span class="spec-value">{{ product.weight }}</span>
+        </div>
+        {% endif %}
+        
+        {% if product.dimensions %}
+        <div class="spec-row">
+          <span class="spec-label">{% if current_lang == 'ar' %}الأبعاد{% else %}Dimensions{% endif %}</span>
+          <span class="spec-value">{{ product.dimensions }}</span>
+        </div>
+        {% endif %}
+        
+        <div class="spec-row">
+          <span class="spec-label">{% if current_lang == 'ar' %}القسم الفني{% else %}Category{% endif %}</span>
+          <span class="spec-value">{{ cat_translations.get(product.category, product.category) if current_lang == 'ar' else product.category }}</span>
+        </div>
+      </div>
+
+      <!-- DYNAMIC ADD TO CART EXECUTION -->
+      {% if product.stock > 0 %}
+      <form action="{{ url_for('add_to_cart', product_id=product.id) }}" method="post" class="cart-add-form">
+        <div class="cart-add-row">
+          <div class="qty-control">
+            <button type="button" class="qty-btn" onclick="changeQty('qty_field', -1)">−</button>
+            <input type="number" name="quantity" id="qty_field" value="1" min="1" max="{{ product.stock }}" class="qty-input">
+            <button type="button" class="qty-btn" onclick="changeQty('qty_field', 1)">+</button>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg btn-add-to-cart-override">
+            🛒 {% if current_lang == 'ar' %}إضافة إلى السلة{% else %}Add to Cart{% endif %}
+          </button>
+        </div>
+      </form>
+      {% else %}
+      <div class="alert alert-error out-of-stock-notice">
+        {% if current_lang == 'ar' %}عذراً، هذا المنتج غير متوفر في المخزن حالياً.{% else %}This product is currently out of stock.{% endif %}
+      </div>
+      {% endif %}
+
+      <!-- TRUST MARKETING BADGES GRID -->
+      <div class="trust-badges-footer-row">
+        {% set badge_data = [
+          ('🚚', 'توصيل سريع', 'Fast Delivery'),
+          ('🔒', 'دفع آمن وموثوق', 'Secure Payment'),
+          ('↩️', 'سياسة إرجاع مرنة', 'Easy Returns'),
+          ('✅', 'جودة التصنيع مضمونة', 'Quality Guaranteed')
+        ] %}
+        {% for icon, ar_text, en_text in badge_data %}
+        <div class="trust-badge-footer-item">
+          <span>{{ icon }}</span> {{ ar_text if current_lang == 'ar' else en_text }}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RELATED COMPLEMENTARY PRODUCTS ENGINE -->
+{% if related %}
+<section class="section section-gray">
+  <div class="section-header">
+    <span class="section-eyebrow">
+      {% if current_lang == 'ar' %}اخترنا لك خصيصاً{% else %}You May Also Like{% endif %}
+    </span>
+    <h2 class="section-title">
+      {% if current_lang == 'ar' %}منتجات ذات صلة{% else %}Related Products{% endif %}
+    </h2>
+  </div>
+  <div class="products-grid">
+    {% for rp in related %}
+    <div class="product-card" onclick="window.location='{{ url_for('product_detail', product_id=rp.id) }}'">
+      <div class="product-card-img">
+        <div class="product-emoji">{{ cat_emojis.get(rp.category, '📦') }}</div>
+      </div>
+      <div class="product-card-body">
+        <div class="product-card-category">
+          {{ cat_translations.get(rp.category, rp.category) if current_lang == 'ar' else rp.category }}
+        </div>
+        <div class="product-card-name">{{ rp.name }}</div>
+        <div class="product-card-footer">
+          <div class="product-price">
+            {{ "%.2f"|format(rp.price) }} 
+            <span>{% if current_lang == 'ar' %}جنيه{% else %}SDG{% endif %}</span>
+          </div>
+          <a href="{{ url_for('product_detail', product_id=rp.id) }}" class="btn btn-primary btn-sm" onclick="event.stopPropagation()">
+            {% if current_lang == 'ar' %}عرض التفاصيل{% else %}View →{% endif %}
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<script>
+function changeQty(fieldId, delta) {
+  const input = document.getElementById(fieldId);
+  if (!input) return;
+  const newVal = Math.max(1, Math.min(parseInt(input.max) || 999, parseInt(input.value) + delta));
+  input.value = newVal;
+}
+</script>
+{% endblock %}

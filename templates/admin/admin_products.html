@@ -1,0 +1,225 @@
+{% extends "admin/admin_base.html" %}
+{% block admin_content %}
+
+<style>
+  /* ── Table & Layout ─────────────────────────────────────────────────────── */
+  .admin-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .admin-page-header h1 {
+    font-size: 1.4rem;
+    color: #0b1f3a;
+    margin: 0;
+  }
+  .btn-add {
+    display: inline-block;
+    background: #1e6bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .btn-add:hover { background: #0a50cc; }
+
+  .products-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  .products-table thead tr {
+    background: #f0f4ff;
+  }
+  .products-table th,
+  .products-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .products-table th {
+    font-weight: 700;
+    color: #374151;
+    white-space: nowrap;
+  }
+  .products-table tbody tr:hover {
+    background: #f9fafb;
+  }
+
+  /* ── Product thumbnail ──────────────────────────────────────────────────── */
+  .product-thumb {
+    width: 52px;
+    height: 52px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    display: block;
+  }
+  .product-thumb-fallback {
+    width: 52px;
+    height: 52px;
+    border-radius: 8px;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    border: 1px solid #e5e7eb;
+  }
+
+  /* ── Badges ─────────────────────────────────────────────────────────────── */
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-featured  { background: #eff6ff; color: #1d4ed8; }
+  .badge-stock-ok  { background: #dcfce7; color: #16a34a; }
+  .badge-stock-low { background: #fef9c3; color: #b45309; }
+  .badge-stock-out { background: #fee2e2; color: #dc2626; }
+
+  /* ── Action buttons ─────────────────────────────────────────────────────── */
+  .action-btns { display: flex; gap: 8px; align-items: center; }
+  .btn-edit {
+    padding: 6px 14px;
+    background: #0b1f3a;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.8rem;
+  }
+  .btn-edit:hover { background: #1e3a5f; }
+  .btn-delete {
+    padding: 6px 14px;
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: inherit;
+  }
+  .btn-delete:hover { background: #fca5a5; }
+
+  /* ── Empty state ────────────────────────────────────────────────────────── */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6b7280;
+  }
+  .empty-state p { font-size: 1rem; margin-bottom: 16px; }
+</style>
+
+<!-- Page header with "Add Product" link — leads to the full product_form.html -->
+<div class="admin-page-header">
+  <h1>📦 إدارة المنتجات</h1>
+  {#
+    BUG-1a FIX: The old inline add-form was missing the required `category` field,
+    which caused NOT NULL constraint failures.  The correct approach is to send the
+    admin to the dedicated product_form.html (GET /admin/products/add) which
+    contains the full, validated form including the category <select>.
+  #}
+  <a href="{{ url_for('admin_add_product') }}" class="btn-add">＋ إضافة منتج جديد</a>
+</div>
+
+<div class="card">
+  {% if products %}
+  <table class="products-table">
+    <thead>
+      <tr>
+        <th>الصورة</th>
+        <th>الاسم</th>
+        <th>التصنيف</th>
+        <th>SKU</th>
+        <th>السعر (SDG)</th>
+        <th>المخزون</th>
+        <th>مميز</th>
+        <th>الإجراءات</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in products %}
+      {#
+        BUG-4a FIX (route side): admin_products() now queries filter_by(is_active=True),
+        so soft-deleted products never reach this template at all.
+      #}
+      <tr>
+        <!-- ── BUG-3a FIX: guard against product.image being None ─────────── -->
+        <td>
+          {% if product.image %}
+            <img
+              src="{{ url_for('static', filename='uploads/' + product.image) }}"
+              alt="{{ product.name }}"
+              class="product-thumb"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+            >
+            {# Shown only if the image file is missing on disk (onerror fallback) #}
+            <div class="product-thumb-fallback" style="display:none;">📦</div>
+          {% else %}
+            <div class="product-thumb-fallback">📦</div>
+          {% endif %}
+        </td>
+
+        <td>
+          <strong>{{ product.name }}</strong>
+          {% if product.name_ar %}
+            <br><small style="color:#6b7280;">{{ product.name_ar }}</small>
+          {% endif %}
+        </td>
+
+        <td>{{ product.category }}</td>
+
+        <td style="color:#6b7280; font-family:monospace;">
+          {{ product.sku or '—' }}
+        </td>
+
+        <td><strong>{{ "%.2f"|format(product.price) }}</strong></td>
+
+        <td>
+          {% if product.stock > 20 %}
+            <span class="badge badge-stock-ok">{{ product.stock }} متوفر</span>
+          {% elif product.stock > 0 %}
+            <span class="badge badge-stock-low">{{ product.stock }} منخفض</span>
+          {% else %}
+            <span class="badge badge-stock-out">نفد</span>
+          {% endif %}
+        </td>
+
+        <td>
+          {% if product.is_featured %}
+            <span class="badge badge-featured">⭐ مميز</span>
+          {% else %}
+            <span style="color:#9ca3af; font-size:0.8rem;">—</span>
+          {% endif %}
+        </td>
+
+        <td>
+          <div class="action-btns">
+            <a href="{{ url_for('admin_edit_product', pid=product.id) }}" class="btn-edit">✏️ تعديل</a>
+            <form action="{{ url_for('admin_delete_product', pid=product.id) }}" method="POST"
+                  onsubmit="return confirm('هل أنت متأكد من حذف هذا المنتج؟');">
+              <button type="submit" class="btn-delete">🗑 حذف</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% else %}
+  <div class="empty-state">
+    <p>لا توجد منتجات نشطة حالياً.</p>
+    <a href="{{ url_for('admin_add_product') }}" class="btn-add">＋ أضف أول منتج</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

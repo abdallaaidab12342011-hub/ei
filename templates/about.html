@@ -1,0 +1,440 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if current_lang == 'ar' %}عن المحلات – محلات محمد عيداب{% else %}About Us – Mohammed Eidab For Plastic Products{% endif %}
+{% endblock %}
+
+{% block content %}
+<style>
+  /* --- Layout & Global Section Styles --- */
+  .about-hero {
+    padding: 120px 5% 80px;
+  }
+  .about-hero .section-eyebrow {
+    color: rgba(77, 139, 255, 0.9);
+  }
+  
+  .grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  
+  /* --- Stats Component --- */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .stat-card {
+    background: var(--off-white);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+    border: 1px solid var(--gray-light);
+  }
+  .stat-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+  .stat-val {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .stat-title {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  /* --- Mission & Vision Component --- */
+  .mv-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  .mv-card-glass {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 44px;
+  }
+  .mv-card-blue {
+    background: rgba(30, 107, 255, 0.12);
+    border: 1px solid rgba(30, 107, 255, 0.25);
+    border-radius: 20px;
+    padding: 44px;
+  }
+  .mv-icon {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+  }
+  .mv-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    color: white;
+    margin-bottom: 16px;
+  }
+  .mv-text {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.9;
+  }
+
+  /* --- Manufacturing Component --- */
+  .mfg-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0;
+  }
+  .mfg-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+  .mfg-list .checkmark {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .mfg-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .step-card {
+    display: flex;
+    gap: 18px;
+    background: var(--off-white);
+    border-radius: 14px;
+    padding: 22px;
+    border: 1px solid var(--gray-light);
+  }
+  .step-icon {
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-name {
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+  }
+  .step-desc {
+    color: var(--text-light);
+    font-size: 0.85rem;
+    line-height: 1.7;
+  }
+
+  /* --- Founder Component --- */
+  .founder-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .founder-img {
+    width: 100%;
+    border-radius: 24px;
+    object-fit: cover;
+    box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    border: 2px solid rgba(77,139,255,.3);
+  }
+  .founder-eyebrow {
+    color: rgba(77, 139, 255, 0.9);
+  }
+  .founder-p1 {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.9;
+    margin-bottom: 20px;
+  }
+  .founder-p2 {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.9;
+  }
+  .founder-stats {
+    display: flex;
+    gap: 30px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+  }
+  .founder-stats h3 {
+    color: white;
+    margin: 0;
+  }
+  .founder-stats p {
+    color: var(--text-light);
+    margin: 4px 0 0;
+  }
+
+  /* --- CTA Component --- */
+  .cta-section {
+    text-align: center;
+  }
+  .cta-subtitle {
+    margin-bottom: 36px;
+  }
+  .cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ==========================================================================
+     MOBILE RESPONSIVENESS (Media Queries)
+     ========================================================================== */
+  @media (max-width: 992px) {
+    .grid-2col, .founder-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .founder-img {
+      max-width: 350px;
+      display: block;
+      margin: 0 auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .mv-grid {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .stats-grid {
+      grid-template-columns: 1fr;
+    }
+    .about-hero {
+      padding: 80px 5% 40px;
+    }
+  }
+</style>
+
+<!-- HERO -->
+<div class="page-hero about-hero">
+  <span class="section-eyebrow">{% if current_lang == 'ar' %}قصتنا مسيرة تميز{% else %}Our Story{% endif %}</span>
+  <h1>{% if current_lang == 'ar' %}عن محلات محمد عيداب{% else %}About Mohammed Eidab{% endif %}</h1>
+  <p>{% if current_lang == 'ar' %}المصنع والمورد الرائد للمنتجات البلاستيكية عالية الجودة منذ 2010{% else %}Trusted plastic products manufacturer since 2010{% endif %}</p>
+</div>
+
+<!-- HISTORY COMPANY SECTION -->
+<section class="section section-light">
+  <div class="grid-2col">
+    <div>
+      <span class="section-eyebrow">{% if current_lang == 'ar' %}من نحن{% else %}Who We Are{% endif %}</span>
+      <h2 class="section-title" style="margin-bottom: 20px;">{% if current_lang == 'ar' %}مسيرتنا وحكاية التأسيس{% else %}Our Company Story{% endif %}</h2>
+      <p style="color: var(--text-light); line-height: 1.9; margin-bottom: 18px;">
+        {% if current_lang == 'ar' %}
+          تأسست محلات محمد عيداب للمنتجات البلاستيكية في عام 2010 بواسطة السيد محمد عيداب برؤية واضحة ومحددة: تصنيع وتوريد منتجات بلاستيكية متينة وعالية الجودة بأسعار تنافسية تلبي احتياجات الأسواق المحلية والإقليمية بدقة وكفاءة.
+        {% else %}
+          Mohammed Eidab For Plastic Products was founded in 2010 by Mohammed Eidab with a clear mission: to manufacture and supply durable, high-quality plastic products at competitive prices for the regional market.
+        {% endif %}
+      </p>
+      <p style="color: var(--text-light); line-height: 1.9; margin-bottom: 18px;">
+        {% if current_lang == 'ar' %}
+          بدأنا بورشة عمل صغيرة وبعدد محدود من العمال والآليات، وتطورنا بفضل الله لنصبح منشأة تصنيعية متكاملة تمتد على مساحة تزيد عن 5,000 متر مربع، وتضم أكثر من 150 خبيراً ومهنياً متخصصاً وتدير خطوط إنتاج متطورة وآليات حقن بلاستيك متقدمة.
+        {% else %}
+          Starting with a small workshop and a handful of employees, we have grown into a full-scale manufacturing facility spanning over 5,000 square meters, employing over 150 dedicated professionals and operating 20+ state-of-the-art injection molding machines.
+        {% endif %}
+      </p>
+      <p style="color: var(--text-light); line-height: 1.9;">
+        {% if current_lang == 'ar' %}
+          واليوم، نفخر بخدمة آلاف العملاء من كبار تجار الجملة والتجزئة والمستهلكين في كافة أنحاء المنطقة - بدءاً من الاستخدامات المنزلية الفردية الأساسية إلى كبرى سلاسل الفنادق، المستشفيات، المصانع، والمؤسسات الحكومية.
+        {% else %}
+          Today, we serve thousands of retail and wholesale clients across the region — from individual homeowners to large hotel chains, hospitals, factories, and government institutions.
+        {% endif %}
+      </p>
+    </div>
+    
+    <!-- STATS BLOCKS METRICS -->
+    <div class="stats-grid">
+      {% set stats_data = [
+        ('🏗️', 'المساحة الإنتاجية', 'Factory Area', '5,000 م²', '5,000 m²'),
+        ('👷', 'كادر وفريق العمل', 'Team Members', '150+', '150+'),
+        ('📦', 'أصناف المنتجات', 'Products', '500+', '500+'),
+        ('🏆', 'سنوات من التميز', 'Years of Excellence', '10+', '10+')
+      ] %}
+      {% for icon, title_ar, title_en, val_ar, val_en in stats_data %}
+      <div class="stat-card">
+        <div class="stat-icon">{{ icon }}</div>
+        <div class="stat-val">{{ val_ar if current_lang == 'ar' else val_en }}</div>
+        <div class="stat-title">{{ title_ar if current_lang == 'ar' else title_en }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- MISSION & VISION STRATEGY -->
+<section class="section section-dark">
+  <div class="mv-grid">
+    <div class="mv-card-glass">
+      <div class="mv-icon">🎯</div>
+      <h3 class="mv-title">{% if current_lang == 'ar' %}رسالتنا{% else %}Our Mission{% endif %}</h3>
+      <p class="mv-text">
+        {% if current_lang == 'ar' %}
+          تصنيع وتوريد منتجات بلاستيكية فائقة الجودة والمتانة بأسعار معقولة تسهم في تسهيل الحياة اليومية لعملائنا ورفع كفاءة أعمالهم. نحن ملتزمون بممارسات التصنيع المستدامة والابتكار المستمر في تصميم منتجاتنا للحفاظ على مكانتنا الريادية.
+        {% else %}
+          To manufacture and deliver high-quality, durable, and affordable plastic products that improve the daily lives of our customers and help businesses operate more efficiently. We are committed to sustainable manufacturing practices and continuous product innovation.
+        {% endif %}
+      </p>
+    </div>
+    
+    <div class="mv-card-blue">
+      <div class="mv-icon">🔭</div>
+      <h3 class="mv-title">{% if current_lang == 'ar' %}رؤيتنا المستقبليّة{% else %}Our Vision{% endif %}</h3>
+      <p class="mv-text">
+        {% if current_lang == 'ar' %}
+          أن نكون المصنع والمورد الأكثر موثوقية للمنتجات البلاستيكية في المنطقة، والاسم الرائد المعروف بالجودة الصارمة، الابتكار والخدمة التي تضع العميل أولاً. نطمح لتوسيع نطاق منتجاتنا والوصول إلى أسواق إقليمية ودولية جديدة.
+        {% else %}
+          To become the most trusted plastic product manufacturer and supplier in the region, known for uncompromising quality, innovation, and customer-first service. We aim to expand our product range and reach new markets across the Middle East and beyond.
+        {% endif %}
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- CORE VALUES MATRIX -->
+<section class="section section-gray">
+  <div class="section-header">
+    <span class="section-eyebrow">{% if current_lang == 'ar' %}القيم التي نمثلها{% else %}What We Stand For{% endif %}</span>
+    <h2 class="section-title">{% if current_lang == 'ar' %}قيمنا الأساسية للنجاح{% else %}Our Core Values{% endif %}</h2>
+  </div>
+  <div class="features-grid">
+    {% set core_values = [
+      ('⭐', 'الجودة أولاً', 'Quality First', 'لا نساوم مطلقاً على جودة المنتج. تخضع جميع أصنافنا لرقابة وفحص صارم قبل مغادرة منشأتنا.', 'We never compromise on product quality. Every item undergoes rigorous quality control before leaving our facility.'),
+      ('🤝', 'ثقة العملاء والنزاهة', 'Customer Trust', 'بناء علاقات مستدامة طويلة الأمد مع عملائنا قائمة على الشفافية الكاملة، الموثوقية، والالتزام بالتوريد.', 'Building long-term relationships with our customers based on transparency, reliability, and consistent delivery.'),
+      ('💡', 'الابتكار والتطوير المستمر', 'Innovation', 'الاستثمار المستمر في التقنيات الحديثة وتصاميم المنتجات المبتكرة لتلبية متطلبات وتوقعات السوق المتغيرة.', 'Continuously investing in new technologies and product designs to meet evolving market demands.'),
+      ('🌱', 'الاستدامة البيئية', 'Sustainability', 'ملتزمون بالتصنيع المسؤول والحد من الهدر عبر اعتماد عمليات إنتاج ذكية وصديقة للبيئة.', 'Committed to responsible manufacturing with minimal waste and environmentally conscious production processes.'),
+      ('💰', 'الأسعار العادلة والمباشرة', 'Fair Pricing', 'التسعير المباشر من خطوط إنتاج المصنع يضمن لعملائنا دائماً الحصول على أفضل قيمة اقتصادية دون أي مساومة على متانة وجودة الخامة.', 'Factory-direct pricing means our customers always get the best value without sacrificing quality.'),
+      ('⚡', 'الكفاءة والسرعة اللوجستية', 'Efficiency', 'عمليات إدارية ولوجستية مرنة ومبسطة من لحظة تأكيد الطلب وحتى شحنه وتسليمه، لضمان السرعة والدقة لجميع الطلبيات بكافة أحجامها.', 'Streamlined operations from order to delivery, ensuring fast turnaround times for all order sizes.')
+    ] %}
+    {% for icon, title_ar, title_en, desc_ar, desc_en in core_values %}
+    <div class="feature-card">
+      <div class="feature-icon">{{ icon }}</div>
+      <h3 class="feature-title">{{ title_ar if current_lang == 'ar' else title_en }}</h3>
+      <p class="feature-text">{{ desc_ar if current_lang == 'ar' else desc_en }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- MANUFACTURING EXCELLENCE & STEPS -->
+<section class="section section-light">
+  <div class="grid-2col">
+    <div>
+      <span class="section-eyebrow">{% if current_lang == 'ar' %}منشأتنا الصناعية{% else %}Our Facility{% endif %}</span>
+      <h2 class="section-title" style="margin-bottom: 20px;">{% if current_lang == 'ar' %}التميز في التصنيع والإنتاج{% else %}Manufacturing Excellence{% endif %}</h2>
+      <p style="color: var(--text-light); line-height: 1.9; margin-bottom: 18px;">
+        {% if current_lang == 'ar' %}
+          تم تجهيز منشأتنا الإنتاجية الحديثة بأحدث تقنيات خطوط حقن وقولبة البلاستيك، مما يتيح لنا إنتاج كميات ضخمة ومتسقة من المنتجات البلاستيكية فائقة المتانة والجودة ضمن معايير تصنيع عالمية دقيقة.
+        {% else %}
+          Our state-of-the-art manufacturing facility is equipped with the latest injection molding technology, producing consistent, high-quality plastic products at scale.
+        {% endif %}
+      </p>
+      <ul class="mfg-list">
+        {% set mfg_list_items = [
+          ('حاصلون على شهادة نظام إدارة الجودة أيزو ISO 9001:2015', 'ISO 9001:2015 Quality Management Certified'),
+          ('خامات بلاستيكية بكر آمنة للغذاء وخالية تماماً من BPA', 'Food-grade BPA-free plastic materials'),
+          ('أكثر من 5 خطوط إنتاج وآليات حقن وتشكيل متطورة', '5+ injection molding machines'),
+          ('مختبر مدمج خاص داخل المنشأة لضبط الجودة واختبار المواد الخام', 'In-house quality testing laboratory'),
+          ('طاقة إنتاجية واسعة: أكثر من 500,000 قطعة شهرياً للوفاء بالالتزامات', 'Capacity: 500,000+ units per month'),
+          ('فحص مقاومة الأشعة فوق البنفسجية واختبارات تحمل الصدمات لكافة المنتجات', 'UV-resistance and durability testing on all products')
+        ] %}
+        {% for ar_text, en_text in mfg_list_items %}
+        <li>
+          <span class="checkmark">✓</span> {{ ar_text if current_lang == 'ar' else en_text }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    
+    <div class="mfg-steps">
+      {% set mfg_stages = [
+        ('تأمين المواد الخام النقيّة', 'Raw Material Sourcing', 'نعتمد فقط على حبيبات الراتنج البلاستيكية النقية المعتمدة والآمنة للأغذية من كبار الموردين.', 'Only certified, food-safe, high-grade plastic resins from approved suppliers.'),
+        ('التصنيع والتشكيل الدقيق', 'Precision Manufacturing', 'حقن وتشكيل قوالب البلاستيك عبر أنظمة حاسوبية ذكية لضمان دقة الأبعاد والمظهر النهائي المتناسق.', 'Computer-controlled injection molding for consistent dimensions and finish.'),
+        ('رقابة وضبط الجودة الصارم', 'Quality Control', 'فحص كل دفعة إنتاجية بدقة لضمان خلوها من العيوب الهيكلية، والتأكد التام من سلامة ومتانة المواد.', 'Every batch inspected for defects, dimensions, and material integrity.'),
+        ('التعبئة والتوريد اللوجستي', 'Packaging & Dispatch', 'تغليف المنتجات بشكل احترافي لحمايتها، وشحنها مع إمكانية التتبع والرقابة الكاملة للطلبيات موثوقة المصدر.', 'Products professionally packed and dispatched with full traceability.')
+      ] %}
+      {% for stage_ar, stage_en, desc_ar, desc_en in mfg_stages %}
+      <div class="step-card">
+        <div class="step-icon">🔹</div>
+        <div>
+          <div class="step-name">{{ stage_ar if current_lang == 'ar' else stage_en }}</div>
+          <div class="step-desc">{{ desc_ar if current_lang == 'ar' else desc_en }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER PROFILE SECTION -->
+<section class="section section-dark">
+  <div class="founder-grid">
+    <div>
+      <img src="{{ url_for('static', filename='images/founder.jpg') }}" alt="Mohammed Eidab" class="founder-img">
+    </div>
+
+    <div>
+      <span class="section-eyebrow founder-eyebrow">{% if current_lang == 'ar' %}المؤسس والمالك{% else %}Founder & Owner{% endif %}</span>
+      <h2 class="section-title light">{% if current_lang == 'ar' %}السيّد / محمد عيداب{% else %}Mohammed Eidab{% endif %}</h2>
+
+      <p class="founder-p1">
+        {% if current_lang == 'ar' %}
+          المؤسس والمالك لمحلات محمد عيداب للمنتجات البلاستيكية. يكرس المحل جهوده لتقديم أرقى المنتجات البلاستيكية المتينة والمبتكرة للمنازل، الشركات، تجار التجزئة، والقطاعات الصناعية الثقيلة.
+        {% else %}
+          Founder and owner of Mohammed Eidab For Plastic Products. Dedicated to providing high-quality plastic products for homes, businesses, retailers, and industrial customers.
+        {% endif %}
+      </p>
+
+      <p class="founder-p2">
+        {% if current_lang == 'ar' %}
+          منذ عام 2010، تمثلت مهمتنا الراسخة في تقديم حلول بلاستيكية متينة ومبتكرة وموثوقة مع الحفاظ على تطبيق أعلى معايير الجودة الشاملة ونيل رضا وثقة عملائنا المستمرة في السوق.
+        {% else %}
+          Since 2010, our mission has been to deliver durable, reliable, and innovative plastic solutions while maintaining the highest standards of quality and customer satisfaction.
+        {% endif %}
+      </p>
+
+      <div class="founder-stats">
+        <div>
+          <h3>10+</h3>
+          <p>{% if current_lang == 'ar' %}سنوات من الخبرة العميقة{% else %}Years Experience{% endif %}</p>
+        </div>
+        <div>
+          <h3>10K+</h3>
+          <p>{% if current_lang == 'ar' %}عميل شريك وسعيد{% else %}Happy Customers{% endif %}</p>
+        </div>
+        <div>
+          <h3>500+</h3>
+          <p>{% if current_lang == 'ar' %}منتج متداول ومورد{% else %}Products Delivered{% endif %}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CALL TO ACTION CLOSING COMPONENT -->
+<section class="section section-gray cta-section">
+  <h2 class="section-title">{% if current_lang == 'ar' %}ابدأ التعامل وبناء الشراكة معنا الآن{% else %}Start Working With Us{% endif %}</h2>
+  <p class="section-subtitle cta-subtitle">
+    {% if current_lang == 'ar' %}سواء كنت تاجر تجزئة، تاجر جملة، أو مشترياً فردياً يبحث عن المتانة — لدينا المنتجات والحلول البلاستيكية المثالية التي تلبي تطلعاتك.{% else %}Whether you're a retailer, wholesaler, or individual buyer — we have the right products for you.{% endif %}
+  </p>
+  <div class="cta-buttons">
+    <a href="{{ url_for('products') }}" class="btn btn-primary btn-lg">
+      {% if current_lang == 'ar' %}تصفح كتالوج المنتجات{% else %}Browse Products{% endif %}
+    </a>
+    <a href="{{ url_for('contact') }}" class="btn btn-dark btn-lg">
+      {% if current_lang == 'ar' %}تواصل معنا مباشرة{% else %}Get in Touch{% endif %}
+    </a>
+  </div>
+</section>
+{% endblock %}

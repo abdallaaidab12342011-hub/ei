@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم | محلات محمد عيداب</title>
+    <!-- Link to your main CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="admin-sidebar-logo">
+                <span>لوحة التحكم</span>
+            </div>
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin_dashboard') }}">📊 الإحصائيات</a>
+                <a href="{{ url_for('admin_products') }}">📦 إدارة المنتجات</a>
+                <a href="{{ url_for('index') }}">🏠 العودة للموقع</a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-topbar">
+                <div class="admin-topbar-title">لوحة التحكم</div>
+                <!-- This button will be handled by your JS -->
+                <button id="sidebarToggle" style="display:none; border:none; background:none; font-size:20px;">☰</button>
+            </div>
+            
+            <div class="admin-content">
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}{% for message in messages %}
+                    <div class="alert alert-success">{{ message }}</div>
+                  {% endfor %}{% endif %}
+                {% endwith %}
+                {% block admin_content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Script to enable mobile sidebar -->
+    <script>
+        const toggleBtn = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.admin-sidebar');
+        if (window.innerWidth <= 768) {
+            toggleBtn.style.display = 'block';
+        }
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{% extends "admin/admin_base.html" %}
+
+{% block admin_content %}
+<div style="padding: 20px; max-width: 1000px; margin: 0 auto;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 25px;">
+        <h2 style="margin: 0; color: #1f2937;">Order Details: {{ order.order_number }}</h2>
+        <span style="background: #e0f2f1; color: #00695c; padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">
+            {{ order.status }}
+        </span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+        
+        <div style="background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h3 style="margin-top: 0; font-size: 1rem; color: #374151; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px;">Customer Info</h3>
+            <p style="margin: 8px 0; font-size: 0.9rem;"><strong>Name:</strong> {{ customer.name }}</p>
+            <p style="margin: 8px 0; font-size: 0.9rem;"><strong>Phone:</strong> {{ customer.phone }}</p>
+            <p style="margin: 8px 0; font-size: 0.9rem;"><strong>Email:</strong> {{ customer.email or 'N/A' }}</p>
+            <p style="margin: 8px 0; font-size: 0.9rem;"><strong>Address:</strong> {{ customer.address }}, {{ customer.city }}</p>
+        </div>
+        
+        <div style="background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <h3 style="margin-top: 0; font-size: 1rem; color: #374151; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px;">Order Summary</h3>
+            <p style="margin: 8px 0; font-size: 0.9rem;"><strong>Date:</strong> {{ order.created_at.strftime('%Y-%m-%d %H:%M') if order.created_at else 'N/A' }}</p>
+            <p style="margin: 8px 0; font-size: 0.9rem;"><strong>Grand Total:</strong> {{ order.total_amount | sdg }}</p>
+            <p style="margin: 8px 0; font-size: 0.9rem;"><strong>Notes:</strong> {{ order.notes or 'None' }}</p>
+        </div>
+    </div>
+
+    <div style="background: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 30px;">
+        <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 1.1rem; color: #111827;">Items Purchased</h3>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #f3f4f6;">
+                        <th style="padding: 12px; color: #6b7280; font-size: 0.8rem; text-transform: uppercase;">Product</th>
+                        <th style="padding: 12px; color: #6b7280; font-size: 0.8rem; text-transform: uppercase;">SKU</th>
+                        <th style="padding: 12px; color: #6b7280; font-size: 0.8rem; text-transform: uppercase;">Price</th>
+                        <th style="padding: 12px; color: #6b7280; font-size: 0.8rem; text-transform: uppercase;">Qty</th>
+                        <th style="padding: 12px; color: #6b7280; font-size: 0.8rem; text-transform: uppercase; text-align: right;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order_details %}
+                    <tr style="border-bottom: 1px solid #f9fafb;">
+                        <td style="padding: 14px 12px; font-weight: 600; color: #111827;">{{ item.name }}</td>
+                        <td style="padding: 14px 12px; color: #4b5563;">{{ item.sku }}</td>
+                        <td style="padding: 14px 12px; color: #4b5563;">{{ item.price | sdg }}</td>
+                        <td style="padding: 14px 12px; color: #4b5563;">{{ item.quantity }}</td>
+                        <td style="padding: 14px 12px; font-weight: 600; color: #111827; text-align: right;">{{ item.subtotal | sdg }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 15px;">
+        <form action="{{ url_for('update_order_status', order_id=order.id) }}" method="POST">
+            <button type="submit" style="background-color: #059669; color: white; padding: 10px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                Mark as Done ✓
+            </button>
+        </form>
+        <a href="{{ url_for('admin_dashboard') }}" style="text-decoration: none; color: #374151; background: #f3f4f6; padding: 10px 24px; border-radius: 6px; font-weight: 600;">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+</div>
+{% endblock %}

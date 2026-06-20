@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="{{ current_lang }}" dir="{{ 'rtl' if current_lang == 'ar' else 'ltr' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="{% block meta_desc %}{% if current_lang == 'ar' %}محلات محمد عيداب للمنتجات البلاستيكية - الشركة الرائدة في تصنيع وتوريد المنتجات البلاستيكية عالية الجودة.{% else %}Mohammed Eidab For Plastic Products - Leading plastic products manufacturer and supplier.{% endif %}{% endblock %}">
+  <meta name="keywords" content="plastic products, plastic chairs, plastic tables, plastic buckets, plastic containers, plastic manufacturer, wholesale plastic, منتجات بلاستيكية, كراسي بلاستيك, كراسي سودانية">
+  <meta name="author" content="Mohammed Eidab">
+  <meta property="og:title" content="{% block og_title %}{% if current_lang == 'ar' %}محلات محمد عيداب للمنتجات البلاستيكية{% else %}Mohammed Eidab For Plastic Products{% endif %}{% endblock %}">
+  <meta property="og:description" content="{% if current_lang == 'ar' %}المحل والمورد الرائد للمنتجات البلاستيكية عالية الجودة بأسعار الجملة.{% else %}Leading plastic products manufacturer and wholesale supplier.{% endif %}">
+  <meta property="og:type" content="website">
+  <title>{% block title %}Mohammed Eidab For Plastic Products{% endblock %}</title>
+  
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%231e6bff'/><text x='16' y='22' text-anchor='middle' font-size='18'>🏭</text></svg>">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700&display=swap');
+    
+    /* منع الالتواء الأفقي المزعج على شاشات الهواتف */
+    html, body {
+      overflow-x: hidden !important;
+      max-width: 100% !important;
+      width: 100% !important;
+    }
+
+    html[dir="rtl"], html[dir="rtl"] body, html[dir="rtl"] input, html[dir="rtl"] button, html[dir="rtl"] select, html[dir="rtl"] textarea {
+      font-family: 'Cairo', sans-serif !important;
+    }
+
+    /* --- الهيدر (EIDAB NAVBAR) --- */
+    .eidab-navbar {
+      background: #0a192f !important;
+      background: rgba(10, 25, 47, 0.96) !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+      height: 85px;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding: 0 5% !important;
+      position: sticky !important;
+      top: 0 !important;
+      z-index: 99999 !important;
+      box-sizing: border-box !important;
+    }
+
+    .eidab-logo {
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+      text-decoration: none !important;
+      flex-shrink: 0 !important;
+    }
+    .eidab-logo-icon {
+      font-size: 1.5rem;
+      background: rgba(30, 107, 255, 0.15);
+      border: 1px solid rgba(30, 107, 255, 0.3);
+      padding: 6px;
+      border-radius: 10px;
+    }
+    .eidab-logo-text {
+      display: flex !important;
+      flex-direction: column !important;
+      line-height: 1.2 !important;
+    }
+    .eidab-logo-text span:first-child {
+      color: #ffffff !important;
+      font-weight: 700 !important;
+      font-size: 1.1rem !important;
+    }
+    .eidab-logo-text span:last-child {
+      color: #4d8bff !important;
+      font-size: 0.75rem !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.5px !important;
+    }
+
+    /* --- روابط الديسكتوب --- */
+    .eidab-nav-links {
+      display: flex !important;
+      gap: 32px !important;
+      align-items: center !important;
+    }
+    .eidab-nav-links a {
+      color: rgba(255, 255, 255, 0.75) !important;
+      text-decoration: none !important;
+      font-size: 0.95rem !important;
+      font-weight: 500 !important;
+      position: relative !important;
+      padding: 8px 0 !important;
+      transition: color 0.3s ease !important;
+    }
+    .eidab-nav-links a:hover, .eidab-nav-links a.eidab-active {
+      color: #4d8bff !important;
+    }
+
+    /* --- أزرار التحكم اليمنى --- */
+    .eidab-nav-actions {
+      display: flex !important;
+      align-items: center !important;
+      gap: 14px !important;
+      flex-shrink: 0 !important;
+    }
+
+    .eidab-nav-cart {
+      background: #1e6bff !important;
+      color: #ffffff !important;
+      padding: 8px 16px !important;
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+      font-size: 0.85rem !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      text-decoration: none !important;
+    }
+    .eidab-cart-badge {
+      background: #ff4d4d !important;
+      color: white !important;
+      font-size: 0.7rem !important;
+      padding: 2px 6px !important;
+      border-radius: 10px !important;
+    }
+    
+    .eidab-lang-btn {
+      background: rgba(255, 255, 255, 0.05) !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      padding: 8px 14px !important;
+      border-radius: 8px !important;
+      text-decoration: none !important;
+      font-size: 0.85rem !important;
+      font-weight: 600 !important;
+    }
+
+    /* --- زر الهامبرغر المحصن والظاهر 100% على الموبايل --- */
+    .eidab-hamburger {
+      display: none !important; /* مخفي في الشاشات الكبيرة */
+      background: transparent !important;
+      border: none !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      align-items: center !important;
+      gap: 5px !important;
+      cursor: pointer !important;
+      width: 40px !important;
+      height: 40px !important;
+      padding: 0 !important;
+      z-index: 100001 !important;
+    }
+    
+    /* إعطاء أبعاد صريحة جداً للخطوط لضمان عدم اختفائها */
+    .eidab-hamburger span {
+      display: block !important;
+      width: 25px !important;
+      height: 3px !important;
+      background-color: #ffffff !important;
+      background: #ffffff !important;
+      border-radius: 3px !important;
+      transition: transform 0.3s ease, opacity 0.3s ease !important;
+    }
+
+    /* حركة التحول إلى علامة X عند الفتح */
+    .eidab-hamburger.open span:nth-child(1) {
+      transform: translateY(8px) rotate(45deg) !important;
+    }
+    .eidab-hamburger.open span:nth-child(2) {
+      opacity: 0 !important;
+    }
+    .eidab-hamburger.open span:nth-child(3) {
+      transform: translateY(-8px) rotate(-45deg) !important;
+    }
+
+    /* --- القائمة الجانبية للموبايل --- */
+    .eidab-mobile-menu {
+      position: fixed !important;
+      top: 0 !important;
+      bottom: 0 !important;
+      width: 280px !important;
+      height: 100vh !important;
+      background: #0a192f !important;
+      z-index: 100000 !important;
+      padding: 100px 24px 24px 24px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 12px !important;
+      transition: transform 0.3s ease, visibility 0.3s ease !important;
+      visibility: hidden; 
+      box-sizing: border-box !important;
+    }
+    
+    html[dir="ltr"] .eidab-mobile-menu {
+      right: 0 !important;
+      transform: translateX(100%) !important;
+      border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    html[dir="rtl"] .eidab-mobile-menu {
+      left: 0 !important;
+      transform: translateX(-100%) !important;
+      border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    .eidab-mobile-menu.open {
+      transform: translateX(0) !important;
+      visibility: visible !important;
+    }
+    .eidab-mobile-menu a {
+      color: #fff !important;
+      text-decoration: none !important;
+      font-size: 1.1rem !important;
+      padding: 12px 0 !important;
+      display: block !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03) !important;
+    }
+
+    .floating-alerts-container {
+      position: fixed;
+      top: 95px;
+      inset-inline-end: 20px;
+      z-index: 9999;
+      max-width: 380px;
+      width: calc(100% - 40px);
+    }
+
+    /* ==========================================================================
+       MEDIA QUERIES (الاستجابة لشاشات الموبايل)
+       ========================================================================== */
+    @media (max-width: 992px) {
+      .eidab-navbar {
+        height: 75px !important;
+        padding: 0 4% !important;
+      }
+      .eidab-nav-links {
+        display: none !important;
+      }
+      .eidab-hamburger {
+        display: flex !important; /* إظهار زر القائمة بالتأكيد */
+      }
+    }
+
+    @media (max-width: 768px) {
+      .eidab-nav-actions {
+        gap: 8px !important;
+      }
+      .eidab-cart-text {
+        display: none !important; /* إخفاء النص لعدم زحام الشاشة على الموبايل */
+      }
+      .eidab-nav-cart {
+        padding: 8px 10px !important;
+      }
+      .eidab-lang-btn {
+        padding: 8px 10px !important;
+        font-size: 0.8rem !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      /* تعديل حجم نص السطر الثاني للشعار بدلاً من حذفه ليبقى ظاهراً */
+      .eidab-logo-text span:first-child {
+        font-size: 0.95rem !important;
+      }
+      .eidab-logo-text span:last-child {
+        display: block !important; /* نضمن استمرار ظهوره */
+        font-size: 0.65rem !important;
+        letter-spacing: 0px !important;
+      }
+      .eidab-logo-icon {
+        font-size: 1.2rem !important;
+        padding: 4px !important;
+      }
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+<nav class="eidab-navbar" id="navbar">
+  <a href="{{ url_for('index') }}" class="eidab-logo">
+    <div class="eidab-logo-icon">🏭</div>
+    <div class="eidab-logo-text">
+      {% if current_lang == 'ar' %}
+        <span>محلات محمد عيداب</span>
+        <span>للمنتجات البلاستيكية</span>
+      {% else %}
+        <span>Mohammed Eidab</span>
+        <span>FOR Plastic Products</span>
+      {% endif %}
+    </div>
+  </a>
+
+  <div class="eidab-nav-links">
+    <a href="{{ url_for('index') }}" class="{{ 'eidab-active' if request.endpoint == 'index' else '' }}">{{ t['nav_home'] }}</a>
+    <a href="{{ url_for('about') }}" class="{{ 'eidab-active' if request.endpoint == 'about' else '' }}">{{ t['nav_about'] }}</a>
+    <a href="{{ url_for('products') }}" class="{{ 'eidab-active' if request.endpoint in ['products', 'product_detail'] else '' }}">{{ t['nav_products'] }}</a>
+    <a href="{{ url_for('contact') }}" class="{{ 'eidab-active' if request.endpoint == 'contact' else '' }}">{{ t['nav_contact'] }}</a>
+  </div>
+
+  <div class="eidab-nav-actions">
+    <!-- زر السلة -->
+    <a href="{{ url_for('cart') }}" class="eidab-nav-cart">
+      <span>🛒</span> <span class="eidab-cart-text">{{ t['nav_cart'] }}</span>
+      <span class="eidab-cart-badge" id="cartBadge">0</span>
+    </a>
+    
+    <!-- زر اللغة -->
+    {% if current_lang == 'en' %}
+      <a href="{{ url_for('set_lang', lang='ar') }}" class="eidab-lang-btn">العربية</a>
+    {% else %}
+      <a href="{{ url_for('set_lang', lang='en') }}" class="eidab-lang-btn">English</a>
+    {% endif %}
+
+    <!-- زر الهامبرغر (الشرطات الثلاثة) -->
+    <button class="eidab-hamburger" id="hamburgerBtn" onclick="toggleMobileMenu()" aria-label="Menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- القائمة الجانبية -->
+<div class="eidab-mobile-menu" id="mobileMenu">
+  <a href="{{ url_for('index') }}" onclick="closeMobileMenu()">🏠 {{ t['nav_home'] }}</a>
+  <a href="{{ url_for('about') }}" onclick="closeMobileMenu()">ℹ️ {{ t['nav_about'] }}</a>
+  <a href="{{ url_for('products') }}" onclick="closeMobileMenu()">📦 {{ t['nav_products'] }}</a>
+  <a href="{{ url_for('cart') }}" onclick="closeMobileMenu()">🛒 {{ t['nav_cart'] }}</a>
+  <a href="{{ url_for('contact') }}" onclick="closeMobileMenu()">📞 {{ t['nav_contact'] }}</a>
+  <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 12px 0;">
+  {% if current_lang == 'en' %}
+    <a href="{{ url_for('set_lang', lang='ar') }}" onclick="closeMobileMenu()">🌐 الانتقال إلى العربية</a>
+  {% else %}
+    <a href="{{ url_for('set_lang', lang='en') }}" onclick="closeMobileMenu()">🌐 Switch to English</a>
+  {% endif %}
+</div>
+
+<!-- نظام التنبيهات -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="floating-alerts-container">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'success' if category == 'success' else 'error' if category == 'error' else 'info' }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <div class="footer-logo-icon">🏭</div>
+        <div>
+          {% if current_lang == 'ar' %}
+            <div class="footer-brand-name">محلات محمد عيداب</div>
+            <div class="footer-tagline">للمنتجات البلاستيكية</div>
+          {% else %}
+            <div class="footer-brand-name">Mohammed Eidab</div>
+            <div class="footer-tagline">For Plastic Products</div>
+          {% endif %}
+        </div>
+      </div>
+      <p class="footer-desc">
+        {% if current_lang == 'ar' %}
+          الشركة الرائدة في تصنيع وتوريد المنتجات البلاستيكية عالية الجودة للمنازل، الشركات، تجار التجزئة، والمصانع.
+        {% else %}
+          A leading manufacturer and supplier of high-quality plastic products for homes, businesses, retailers, and industries.
+        {% endif %}
+      </p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span> {% if current_lang == 'ar' %}محلات محمد عيداب للمنتجات البلاستيكية  {% else %}Mohammed Eidab For Plastic Products.©2026{% endif %} {{ t['footer_rights'] }}</span>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const btn = document.getElementById('hamburgerBtn');
+  
+  menu.classList.toggle('open');
+  btn.classList.toggle('open');
+  
+  document.body.style.overflow = menu.classList.contains('open') ? 'hidden' : '';
+}
+
+function closeMobileMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const btn = document.getElementById('hamburgerBtn');
+  
+  menu.classList.remove('open');
+  btn.classList.remove('open');
+  document.body.style.overflow = '';
+}
+</script>
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
