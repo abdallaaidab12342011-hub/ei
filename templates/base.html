@@ -355,7 +355,20 @@
   <div class="footer-grid">
     <div class="footer-brand">
       <div class="footer-logo">
-        <div class="footer-logo-icon">🏭</div>
+        <!--
+          FIX: hidden admin entry point.
+          This emoji is the ONLY way into /admin/login anywhere on the
+          public site — no other link, button, or menu item points to it
+          (there's nothing else to find by clicking around or viewing the
+          nav/footer visually). It looks and behaves exactly like a normal
+          static logo icon: no underline, no color change, default cursor.
+          NOTE: this is obscurity, not real security — anyone who views
+          the page source will see the href instantly. The actual security
+          is still the admin password + @login_required on every route.
+        -->
+        <a href="{{ url_for('admin_login') }}" style="text-decoration:none; cursor:default;" aria-hidden="true" tabindex="-1">
+          <div class="footer-logo-icon">🏭</div>
+        </a>
         <div>
           {% if current_lang == 'ar' %}
             <div class="footer-brand-name">محلات محمد عيداب</div>

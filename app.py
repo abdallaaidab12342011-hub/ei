@@ -4,7 +4,7 @@ from models import db, AdminUser, Product, Customer, Order, OrderItem
 from datetime import datetime, timezone
 from markupsafe import Markup
 import os
-from werkzeug.utils import secure_filename
+import uuid
 import random
 import string
 
@@ -17,6 +17,13 @@ app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 # ── FIX BUG-2c: guarantee the uploads directory exists on startup ──────────────
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+# ── FIX BUG-7: whitelist of allowed image extensions for product uploads ──────
+ALLOWED_IMAGE_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+
+# ── FIX BUG-6: valid order statuses — MUST match your CSS badge classes
+#    (badge-pending, badge-confirmed, badge-shipped, badge-delivered, badge-cancelled)
+ORDER_STATUSES = ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Cancelled']
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 1. CENTRAL TRANSLATION DICTIONARY
@@ -244,6 +251,35 @@ def load_user(user_id):
 
 def generate_order_number():
     return 'MEP-' + ''.join(random.choices(string.digits, k=8))
+
+
+# ── FIX BUG-7: image upload helper ─────────────────────────────────────────────
+# Replaces secure_filename()-only approach. Two problems it solves:
+#   1. No extension whitelist before — any file type could be uploaded.
+#   2. Two products uploading a file with the same name (e.g. "image.jpg")
+#      would silently overwrite each other's file on disk.
+# Fix: validate extension, then generate a guaranteed-unique filename with uuid4.
+def allowed_image(filename):
+    return (
+        '.' in filename
+        and filename.rsplit('.', 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
+    )
+
+
+def save_product_image(file_storage):
+    """
+    Validate and save an uploaded product image.
+    Returns the new unique filename on success, or None if the file
+    was missing or had a disallowed extension.
+    """
+    if not file_storage or not file_storage.filename:
+        return None
+    if not allowed_image(file_storage.filename):
+        return None
+    ext = file_storage.filename.rsplit('.', 1)[1].lower()
+    unique_name = f"{uuid.uuid4().hex}.{ext}"
+    file_storage.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_name))
+    return unique_name
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -552,6 +588,68 @@ def admin_dashboard():
     return render_template('admin/dashboard.html', stats=stats, recent_orders=recent_orders)
 
 
+# ── FIX BUG-8: these two routes did not exist at all. The sidebar (and the
+#    "Customers" stat card on the dashboard) had nothing to link to — admins
+#    had no way to browse the full order list or the customer list, only the
+#    "recent 10" preview on the dashboard and one-by-one order detail pages.
+@app.route('/admin/orders')
+@login_required
+def admin_orders():
+    page = request.args.get('page', 1, type=int)
+    status = request.args.get('status', '')
+    search = request.args.get('search', '').strip()
+    per_page = 20
+
+    query = Order.query
+    if status:
+        query = query.filter_by(status=status)
+    if search:
+        query = query.join(Customer).filter(
+            db.or_(
+                Customer.name.ilike(f'%{search}%'),
+                Customer.phone.ilike(f'%{search}%'),
+                Order.order_number.ilike(f'%{search}%'),
+            )
+        )
+    query = query.order_by(Order.created_at.desc())
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    return render_template(
+        'admin/orders.html',
+        orders=pagination.items,
+        pagination=pagination,
+        current_status=status,
+        search=search,
+        order_statuses=ORDER_STATUSES,
+    )
+
+
+@app.route('/admin/customers')
+@login_required
+def admin_customers():
+    page = request.args.get('page', 1, type=int)
+    search = request.args.get('search', '').strip()
+    per_page = 20
+
+    query = Customer.query
+    if search:
+        query = query.filter(
+            db.or_(
+                Customer.name.ilike(f'%{search}%'),
+                Customer.phone.ilike(f'%{search}%'),
+            )
+        )
+    query = query.order_by(Customer.created_at.desc())
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    return render_template(
+        'admin/customers.html',
+        customers=pagination.items,
+        pagination=pagination,
+        search=search,
+    )
+
+
 # ── FIX BUG-4a: filter is_active=True so soft-deleted products never appear ──
 @app.route('/admin/products')
 @login_required
@@ -565,7 +663,8 @@ def admin_products():
     return render_template('admin/admin_products.html', products=products_list)
 
 
-# ── FIX BUG-1a/1b (category field) + BUG-2a (request.files for image) ────────
+# ── FIX BUG-1a/1b (category field) + BUG-2a (request.files for image)
+#    + FIX BUG-7 (validated, collision-proof image upload) ───────────────────
 @app.route('/admin/products/add', methods=['GET', 'POST'])
 @login_required
 def admin_add_product():
@@ -575,12 +674,15 @@ def admin_add_product():
         'Industrial Products',
     ]
     if request.method == 'POST':
-        # ── Image upload: read from request.files, not request.form ──────────
+        # ── Image upload: validated extension + unique filename ──────────────
         image_filename = 'default.jpg'
         image_file = request.files.get('image')
         if image_file and image_file.filename:
-            image_filename = secure_filename(image_file.filename)
-            image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
+            saved_name = save_product_image(image_file)
+            if saved_name:
+                image_filename = saved_name
+            else:
+                flash('Invalid image format. Use PNG, JPG, JPEG, GIF, or WEBP.', 'error')
 
         # ── Convert empty SKU string to None to avoid UNIQUE constraint hits ─
         raw_sku = request.form.get('sku', '').strip()
@@ -588,7 +690,7 @@ def admin_add_product():
         p = Product(
             name=request.form.get('name', '').strip(),
             name_ar=request.form.get('name_ar', '').strip() or None,
-            category=request.form.get('category'),          # ← now present in form
+            category=request.form.get('category'),
             description=request.form.get('description', '').strip() or None,
             price=float(request.form.get('price', 0) or 0),
             stock=int(request.form.get('stock', 0) or 0),
@@ -608,7 +710,8 @@ def admin_add_product():
     return render_template('admin/product_form.html', product=None, categories=categories, action='Add')
 
 
-# ── FIX BUG-1c (all fields) + BUG-2b (image upload in edit) ─────────────────
+# ── FIX BUG-1c (all fields) + BUG-2b (image upload in edit)
+#    + FIX BUG-7 (validated, collision-proof image upload) ───────────────────
 @app.route('/admin/products/edit/<int:pid>', methods=['GET', 'POST'])
 @login_required
 def admin_edit_product(pid):
@@ -637,12 +740,14 @@ def admin_edit_product(pid):
         product.color = request.form.get('color', '').strip() or None
         product.is_featured = bool(request.form.get('is_featured'))
 
-        # ── Image: only replace if a new file was actually uploaded ──────────
+        # ── Image: only replace if a new, valid file was actually uploaded ───
         image_file = request.files.get('image')
         if image_file and image_file.filename:
-            image_filename = secure_filename(image_file.filename)
-            image_file.save(os.path.join(app.config['UPLOAD_FOLDER'], image_filename))
-            product.image = image_filename
+            saved_name = save_product_image(image_file)
+            if saved_name:
+                product.image = saved_name
+            else:
+                flash('Invalid image format. Existing image was kept.', 'error')
 
         db.session.commit()
         flash('Product updated successfully!', 'success')
@@ -650,12 +755,33 @@ def admin_edit_product(pid):
 
     return render_template('admin/product_form.html', product=product, categories=categories, action='Edit')
 
+
+# ── FIX BUG-5: was missing @login_required entirely — any anonymous visitor
+#    who guessed/knew an order ID could mark it complete with no auth at all.
+# ── FIX BUG-6: hardcoded status='Done' didn't match ANY badge CSS class
+#    (badge-pending / badge-confirmed / badge-shipped / badge-delivered /
+#    badge-cancelled), so it always rendered unstyled. Now accepts a real
+#    status from the form (falls back to 'Delivered' for one-click use from
+#    a plain button with no dropdown, which is fully backward compatible).
 @app.route('/admin/update-order/<int:order_id>', methods=['POST'])
+@login_required
 def update_order_status(order_id):
-    order = Order.query.get_or_404(order_id)
-    order.status = 'Done'  # Update the database field
-    db.session.commit()    # Save the change
-    return redirect(url_for('admin_dashboard')) # Redirect back to the dashboard
+    order = db.session.get(Order, order_id)
+    if not order:
+        flash('Order not found.', 'error')
+        return redirect(url_for('admin_dashboard'))
+
+    new_status = request.form.get('status', 'Delivered')
+    if new_status not in ORDER_STATUSES:
+        flash(f'Invalid status "{new_status}".', 'error')
+        return redirect(request.referrer or url_for('admin_dashboard'))
+
+    order.status = new_status
+    db.session.commit()
+    flash(f'Order #{order.order_number} marked as {new_status}.', 'success')
+    return redirect(request.referrer or url_for('admin_dashboard'))
+
+
 @app.route('/admin/order/<int:order_id>')
 @login_required
 def admin_order_details(order_id):
@@ -664,13 +790,13 @@ def admin_order_details(order_id):
     if not order:
         flash('Order not found.', 'error')
         return redirect(url_for('admin_dashboard'))
-        
+
     # 2. Get the customer details
     customer = db.session.get(Customer, order.customer_id)
-    
+
     # 3. Get the items and match them with product names
     items = OrderItem.query.filter_by(order_id=order_id).all()
-    
+
     order_details = []
     for item in items:
         product = db.session.get(Product, item.product_id)
@@ -681,11 +807,13 @@ def admin_order_details(order_id):
             'price': item.unit_price,
             'subtotal': item.subtotal
         })
-        
-    return render_template('admin/admin_order_details.html', 
-                           order=order, 
-                           customer=customer, 
-                           order_details=order_details)
+
+    return render_template('admin/admin_order_details.html',
+                           order=order,
+                           customer=customer,
+                           order_details=order_details,
+                           order_statuses=ORDER_STATUSES)
+
 
 @app.route('/admin/products/delete/<int:pid>', methods=['POST'])
 @login_required

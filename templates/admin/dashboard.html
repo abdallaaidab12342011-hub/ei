@@ -1,114 +1,81 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Admin Dashboard</title>
-    <style>
-        body{
-            font-family:Arial,sans-serif;
-            background:#f5f7fa;
-            margin:0;
-        }
+{% extends 'admin/admin_base.html' %}
+{% block title %}لوحة التحكم{% endblock %}
+{% block page_title %}لوحة التحكم{% endblock %}
 
-        .header{
-            background:#0b1f3a;
-            color:white;
-            padding:20px;
-        }
+{% block admin_content %}
 
-        .container{
-            padding:30px;
-        }
-
-        .card{
-            background:white;
-            padding:20px;
-            border-radius:12px;
-            margin-bottom:20px;
-            box-shadow:0 2px 10px rgba(0,0,0,.1);
-        }
-
-        table{
-            width:100%;
-            border-collapse:collapse;
-        }
-
-        th,td{
-            padding:12px;
-            border-bottom:1px solid #ddd;
-            text-align: left;
-        }
-    </style>
-</head>
-<body>
-
-<div class="header">
-    <h1>Admin Dashboard</h1>
+<div class="admin-card" style="margin-bottom:24px;">
+  <div class="admin-card-header">
+    <span class="admin-card-title">الإحصائيات</span>
+  </div>
+  <div class="admin-card-body">
+    <div class="admin-grid-5">
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">📦</div>
+        <div class="admin-stat-value">{{ stats.total_products }}</div>
+        <div class="admin-stat-label">المنتجات</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">🧾</div>
+        <div class="admin-stat-value">{{ stats.total_orders }}</div>
+        <div class="admin-stat-label">الطلبات</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">👥</div>
+        <div class="admin-stat-value">{{ stats.total_customers }}</div>
+        <div class="admin-stat-label">العملاء</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">⏳</div>
+        <div class="admin-stat-value">{{ stats.pending_orders }}</div>
+        <div class="admin-stat-label">طلبات معلقة</div>
+      </div>
+      <div class="admin-stat-card">
+        <div class="admin-stat-icon">💰</div>
+        <div class="admin-stat-value">{{ stats.total_revenue | sdg }}</div>
+        <div class="admin-stat-label">الإيرادات</div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<div class="container">
-
-    <div class="card">
-        <h2>Statistics</h2>
-
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:20px;">
-
-    <div class="card">
-        <h3>{{ stats.total_products }}</h3>
-        <p>Products</p>
+<div class="admin-card">
+  <div class="admin-card-header">
+    <span class="admin-card-title">آخر الطلبات</span>
+    <a href="{{ url_for('admin_orders') }}" class="btn btn-dark btn-sm">عرض جميع الطلبات ←</a>
+  </div>
+  <div class="admin-card-body" style="padding:0;">
+    {% if recent_orders %}
+    <div class="table-responsive" style="border:none; border-radius:0;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>رقم الطلب</th>
+            <th>الحالة</th>
+            <th>الإجمالي</th>
+            <th>التاريخ</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in recent_orders %}
+          <tr>
+            <td style="font-weight:600;">{{ order.order_number }}</td>
+            <td><span class="badge badge-{{ order.status|lower }}">{{ order.status }}</span></td>
+            <td>{{ order.total_amount | sdg }}</td>
+            <td style="font-size:0.85rem; color:var(--text-light);">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>
+              <a href="{{ url_for('admin_order_details', order_id=order.id) }}" class="btn btn-primary btn-sm">عرض</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-
-    <div class="card">
-        <h3>{{ stats.total_orders }}</h3>
-        <p>Orders</p>
-    </div>
-
-    <div class="card">
-        <h3>{{ stats.total_customers }}</h3>
-        <p>Customers</p>
-    </div>
-
-    <div class="card">
-        <h3>{{ stats.pending_orders }}</h3>
-        <p>Pending Orders</p>
-    </div>
-
-    <div class="card">
-        <h3>{{ stats.total_revenue }}</h3>
-        <p>Revenue</p>
-    </div>
-
-</div>
-    </div>
-
-    <div class="card">
-        <h2>Recent Orders</h2>
-
-        {% if recent_orders %}
-        <table>
-            <tr>
-                <th>Order</th>
-                <th>Status</th>
-                <th>Total Amount</th>
-                <th>Actions</th>
-            </tr>
-
-           {% for order in recent_orders %}
-  <tr>
-    <td>{{ order.order_number }}</td>
-    <td>{{ order.status }}</td>
-    <td>{{ order.total_amount }}</td>
-    <td>
-        <a href="{{ url_for('admin_order_details', order_id=order.id) }}" style="background-color: #007bff; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px;">View</a>
-    </td>
-  </tr>
-{% endfor %}
-
-        </table>
-        {% else %}
-        <p>No recent orders.</p>
-        {% endif %}
-    </div>
+    {% else %}
+    <p style="padding:28px; color:var(--text-light);">لا توجد طلبات حديثة.</p>
+    {% endif %}
+  </div>
 </div>
 
-</body>
-</html>
+{% endblock %}

@@ -5,13 +5,23 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavbarScroll();
-  initMobileMenu();
   initCartBadge();
   initIntersectionObservers();
   initAlertDismissal();
   initAdminSidebar();
   initSmoothScroll();
 });
+
+// ── NOTE on the public mobile menu ──
+// There used to be an initMobileMenu() here targeting `.nav-hamburger` /
+// `.mobile-menu`. Those classes don't exist in base.html — the real markup
+// uses `.eidab-hamburger` / `.eidab-mobile-menu`, and base.html already has
+// its own working toggleMobileMenu() inline <script> wired via onclick.
+// That function was always a silent no-op (querySelector returned null,
+// so it returned early every time). Removed it so nobody "fixes" the
+// selectors later and accidentally double-toggles the menu (one click
+// would open it via the inline script AND close it again via this one,
+// cancelling out). The public hamburger lives entirely in base.html now.
 
 // ── Navbar Scroll Effects (Performance Throttled) ──
 function initNavbarScroll() {
@@ -30,22 +40,14 @@ function initNavbarScroll() {
   }, { passive: true });
 }
 
-// ── Interactive Mobile Menus & Accessibility ──
-function initMobileMenu() {
-  const hamburger = document.querySelector('.nav-hamburger');
-  const mobileMenu = document.querySelector('.mobile-menu');
-  if (!hamburger || !mobileMenu) return;
-
-  hamburger.addEventListener('click', () => {
-    const isOpen = mobileMenu.classList.toggle('open');
-    hamburger.setAttribute('aria-expanded', isOpen);
-    document.body.style.overflow = isOpen ? 'hidden' : '';
-  });
-}
-
 // ── Dynamic Asynchronous Cart Lifecycle ──
 function updateCartBadge() {
-  const badge = document.querySelector('.cart-badge');
+  // FIX BUG-9: this was querying `.cart-badge`, but base.html's actual
+  // markup uses `.eidab-cart-badge`. Since `.cart-badge` never matched
+  // anything, this function returned early on every page load and the
+  // badge was permanently stuck at its hardcoded "0" from the HTML,
+  // no matter how many items were really in the cart.
+  const badge = document.querySelector('.eidab-cart-badge');
   if (!badge) return;
 
   fetch('/cart/count')
@@ -101,7 +103,7 @@ function animateCounter(el) {
   const step = (now) => {
     const elapsed = now - startTime;
     const progress = Math.min(elapsed / duration, 1);
-    
+
     // Cubic easing out curve transformation
     const easeOutCubic = 1 - Math.pow(1 - progress, 3);
     el.textContent = Math.round(easeOutCubic * target).toLocaleString();
@@ -115,7 +117,7 @@ function animateCounter(el) {
 
 // ── Global Quantity Adjustments (Supports Detail View & Cart Summary) ──
 function changeQty(identifier, delta) {
-  // Resolves target field directly or attempts item prefix strings 
+  // Resolves target field directly or attempts item prefix strings
   const input = document.getElementById(identifier) || document.getElementById('qty-' + identifier);
   if (!input) return;
 
@@ -175,7 +177,7 @@ function initSmoothScroll() {
     anchor.addEventListener('click', function(e) {
       const hash = this.getAttribute('href');
       if (hash === '#') return;
-      
+
       const targetElement = document.querySelector(hash);
       if (targetElement) {
         e.preventDefault();
